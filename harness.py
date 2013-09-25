@@ -58,7 +58,7 @@ if __name__ == '__main__':
                     fcrelease = string.split(package[1], '.')
                     domain = domainmap(fcrelease[-1])
                     logfile = open('/var/log/harness.log', 'a')
-                    logfile.write('Testing ' + package + '\n')
+                    logfile.write('Testing ' + package[1] + '\n')
                     logfile.close()
 
                     dom32 = domain + '32'
