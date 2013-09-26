@@ -60,7 +60,7 @@ if __name__ == '__main__':
                     logfile = open('/var/log/harness.log', 'a')
                     logfile.write('Testing ' + package[1] + '\n')
                     logfile.close()
-
+                    writelatest(domain, package[1])
                     dom32 = domain + '32'
                     dom64 = domain + '64'
                     print "starting domain %s" % (dom32)
