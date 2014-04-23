@@ -1,0 +1,33 @@
+<html>
+
+<head>
+  <title>Kernel Test Results </title>
+  <link rel='stylesheet' type='text/css'
+      href='http://fedoraproject.org/static/css/fedora.css' />
+</head>
+
+<body>
+  <div id='head h1 a'>
+    <img src='http://fedoraproject.org/w/uploads/3/3c/Fedora_logo.png'>
+  </div>
+
+  <div id='nav'>
+    <a href='index.html'>Home</a>
+    {% for release in releases %}
+    {% if release == rawhide %}
+      <a href='rawhide.html'>Fedora Rawhide</a>
+    {% else %}
+      <a href='fedora_{{ release[0] }}.html'>Fedora {{ release[0] }}</a>
+    {% endif %}
+  </div>
+
+  <div id='content'>
+    {% block content %}{% endblock %}
+  </div>
+
+  <div id="bottom">
+    Generated at {{ date }}
+  </div>
+</body>
+
+</html>

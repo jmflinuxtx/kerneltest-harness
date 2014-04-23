@@ -1,0 +1,26 @@
+{% extends "master.html" %}
+
+{% block content %}
+<a href='http://fedoraproject.org/wiki/KernelTestingInitiative'>
+    <h1>Fedora Kernel Test Results</h1>
+</a>
+<table border='1' style='width:400px'>
+<tr>
+<th>Kernel</th>
+<th>Result</th>
+<th>Logs</th>
+</tr>
+{% for result in test_matrix %}
+    <tr>
+        <td>
+            <a href='{{ result.kver }}.html'>
+                {{ result.kver }}
+            </a>
+        </td>
+        <td>{{ result.testresult }}</td>
+        <td><a href='logs/{{ result.testid }}.log'>logs</a></td>
+    </tr>
+{% endfor %}
+</table>
+
+{% endblock %}

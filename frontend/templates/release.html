@@ -1,0 +1,24 @@
+{% extends "master.html" %}
+
+{% block content %}
+{% if release == rawhide %}
+    <h1>Kernels Tested for Fedora Rawhide</h1>
+{% else %}
+    <h1>Kernels Tested for Fedora {{ release.releasenum }}</h1>
+{% endif %}
+
+<table border='1' style='width:400px'>
+<tr>
+    <th>Kernel</th>
+</tr>
+{% for kernel in kernels %}
+<tr>
+    <td>
+        <a href='kernelresult.py?kver={{ kernel.kver }}'>
+            {{ kernel.kver }}
+        </a>
+</tr>
+{% endfor %}
+</table>
+
+{% endblock %}
