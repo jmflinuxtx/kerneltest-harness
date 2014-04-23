@@ -25,22 +25,28 @@
 
 class Config(object):
     """Configure me so examples work
-    
+
     Use me like this:
-    
+
         mysql.connector.Connect(**Config.dbinfo())
+
+    or
+
+        sqlalchemy.create_engine(Config.db_url())
+
     """
-    
+
+    DBMS = 'mysql'
     HOST = 'localhost'
     DATABASE = 'kerneltest'
     USER = 'user'
     PASSWORD = 'password'
     PORT = 3306
-    
+
     CHARSET = 'utf8'
     UNICODE = True
     WARNINGS = True
-    
+
     @classmethod
     def dbinfo(cls):
         return {
@@ -53,4 +59,11 @@ class Config(object):
             'use_unicode': cls.UNICODE,
             'get_warnings': cls.WARNINGS,
             }
-    
+
+    @classmethod
+    def db_url(cls):
+        return '%s://%s:%s@%s:%s/%s?charset=%s&use_unicode=%s&'\
+            'get_warnings=%s' % (
+                self.DBMS, self.USER, cls.PASSWORD, cls.HOST, cls.PORT,
+                cls.DATABASE, cls.CHARSET, cls.UNICODE, cls.WARNINGS)
+
