@@ -280,6 +280,12 @@ def upload_autotest():
         test_result = form.test_result.data
         username = form.username.data
 
+        if username == 'kerneltest':
+            flask.flash(
+                'The `kerneltest` username is reserved, you are not '
+                'allowed to use it', 'error')
+            return flask.redirect(flask.url_for('upload'))
+
         try:
             tests = upload_results(
                 test_result, username, authenticated=False)
