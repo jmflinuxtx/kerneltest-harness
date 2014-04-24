@@ -2,6 +2,8 @@
 #
 # Licensed under the terms of the GNU GPL License version 2
 
+import datetime
+
 import sqlalchemy as sa
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
@@ -19,17 +21,17 @@ class KernelTest(BASE):
     testset = sa.Column(sa.String(80), nullable=False)
     kver = sa.Column(sa.Text(), nullable=False)
     fver = sa.Column(sa.Integer, nullable=True)
-    testarch sa.Column(sa.String(8), nullable=False)
-    testrel sa.Column(sa.String(80), nullable=False)
-    testresult sa.Column(sa.ENUM(['PASS', 'FAIL'], name='testresult')),
-    failedtests sa.Column(sa.Text(), nullable=True)
+    testarch = sa.Column(sa.String(8), nullable=False)
+    testrel = sa.Column(sa.String(80), nullable=False)
+    testresult = sa.Column(sa.Enum(['PASS', 'FAIL'], name='testresult')),
+    failedtests = sa.Column(sa.Text(), nullable=True)
 
 
 class Release(BASE):
     __tablename__ = 'releases'
     releasenum = sa.Column(sa.Integer, primary_key=True)
-    support sa.Column(
-        sa.ENUM(['RAWHIDE', 'TEST', 'RELEASE', 'RETIRED'], name='support')),
+    support = sa.Column(
+        sa.Enum(['RAWHIDE', 'TEST', 'RELEASE', 'RETIRED'], name='support')),
 
 
 def create_session(
