@@ -286,10 +286,11 @@ def upload_anonymous():
             authenticated = True
 
         if username == 'kerneltest':
-            flask.flash(
-                'The `kerneltest` username is reserved, you are not '
-                'allowed to use it', 'error')
-            return flask.redirect(flask.url_for('upload'))
+            output = {'error': 'The `kerneltest` username is reserved, you '
+                'are not allowed to use it'}
+            jsonout = flask.jsonify(output)
+            jsonout.status_code = 401
+            return jsonout
 
         try:
             tests = upload_results(
