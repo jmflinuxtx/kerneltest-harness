@@ -1,0 +1,28 @@
+{% extends "master.html" %}
+
+{% block content %}
+<a href='http://fedoraproject.org/wiki/KernelTestingInitiative'>
+    <h1>Fedora Kernel Test Results -- Admin</h1>
+</a>
+
+<p> This page allows you to upload new test results into the database.</p>
+
+<form action="{{ url_for('admin') }}"
+      method="post" enctype="multipart/form-data">
+    <table>
+        <tr>
+            <td>{{ form.test_result.label }}</td>
+            <td>{{ form.test_result|safe }}</td>
+            {% if after %} <td>{{ after }}</td>{% endif %}
+            {% if form.test_result.errors %}
+                {% for error in form.test_result.errors%}
+                    <td class="error">{{ error }}</td>
+                {% endfor %}
+            {% endif %}
+        </tr>
+    </table>
+    {{ form.csrf_token }}
+    <input type="submit" class="submit positive button" value="Submit">
+</form>
+
+{% endblock %}

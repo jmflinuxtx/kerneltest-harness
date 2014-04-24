@@ -14,8 +14,8 @@
 {% for kernel in kernels %}
 <tr>
     <td>
-        <a href='kernelresult.py?kver={{ kernel.kver }}'>
-            {{ kernel.kver }}
+        <a href='{{ url_for("kernel", kernel=kernel[0]) }}'>
+            {{ kernel[0] }}
         </a>
 </tr>
 {% endfor %}
