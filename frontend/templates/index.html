@@ -6,15 +6,22 @@
 </a>
 <table border='1' style='width:400px'>
 <tr>
-<th>Kernel</th>
-<th>Result</th>
-<th>Logs</th>
+    <th>Kernel</th>
+    <th>Release</th>
+    <th>Result</th>
+    <th>Logs</th>
 </tr>
 {% for result in test_matrix %}
     <tr>
         <td>
             <a href='{{ url_for("kernel", kernel=result.kver) }}'>
                 {{ result.kver }}
+            </a>
+        </td>
+        <td>
+            <a href='{{ url_for("release", release=result.fver) }}'>
+                {% if release == rawhide %} Rawhide {% else %}
+                Fedora {{ result.fver }} {% endif %}
             </a>
         </td>
         <td>{{ result.testresult }}</td>
