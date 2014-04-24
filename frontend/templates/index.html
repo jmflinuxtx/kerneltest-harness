@@ -8,6 +8,7 @@
 <tr>
     <th>Kernel</th>
     <th>Release</th>
+    <th>Arch</th>
     <th>Result</th>
     <th>Logs</th>
 </tr>
@@ -24,6 +25,7 @@
                 Fedora {{ result.fver }} {% endif %}
             </a>
         </td>
+        <td>{{ result.testarch }}</td>
         <td>{{ result.testresult }}</td>
         <td>
             <a href='{{ url_for("logs", logid=result.testid) }}'>

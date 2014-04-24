@@ -7,6 +7,7 @@
 <tr>
     <th>Kernel</th>
     <th>Release</th>
+    <th>Arch</th>
     <th>Result</th>
     <th>log</th>
 </tr>
@@ -18,6 +19,7 @@
                 {{ test.fver }}
             </a>
         </td>
+        <td>{{ test.testarch }}</td>
         <td>{{ test.testresult }}</td>
         <td><a href='logs/{{ kernel.testid }}.log'>logs</a></td>
     </tr>
