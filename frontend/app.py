@@ -197,7 +197,7 @@ def upload():
     form = UploadForm()
     if form.validate_on_submit():
         test_result = form.test_result.data
-        username = form.username.data
+        username = flask.g.fas_user.username
 
         if username == 'kerneltest':
             flask.flash(
