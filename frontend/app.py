@@ -129,6 +129,14 @@ def upload():
     form = UploadForm()
     if form.validate_on_submit():
         test_result = form.test_result.data
+        username = form.username.data
+
+        if username == 'kerneltest':
+            flask.flash(
+                'The `kerneltest` username is reserved, you are not '
+                'allowed to use it', 'error')
+            return flask.redirect(flask.url_for('upload'))
+
         logdir = APP.config.get('LOG_DIR', 'logs')
         if not os.path.exists(logdir) and not os.path.isdir(logdir):
             os.mkdir(logdir)
