@@ -125,7 +125,7 @@ def logs(logid):
 
 @APP.route('/upload/', methods=['GET', 'POST'])
 def upload():
-    ''' Display the admin page where new results can be uploaded. '''
+    ''' Display the page where new results can be uploaded. '''
     form = UploadForm()
     if form.validate_on_submit():
         test_result = form.test_result.data
@@ -169,7 +169,7 @@ def upload():
             flask.flash('Upload failed', 'error')
 
     return flask.render_template(
-        'admin.html',
+        'upload.html',
         form=form,
     )
 
