@@ -173,6 +173,71 @@ def upload():
         form=form,
     )
 
+@APP.route('/api/upload/', methods=['POST'])
+def api_upload():
+    ''' Specific endpoint for some clients to upload their results. '''
+    form = ApiUploadForm(csrf_enabled=False)
+    httpcode=200
+    error = False
+
+    if form.validate_on_submit():
+        test_result = form.test_result.data
+        api_token = form.api_token.data
+
+        if api_token is None or api_token != APP.config.get('API_KEY', None):
+            output = {'error': 'Invalid api_token provided'}
+            jsonout = flask.jsonify(output)
+            jsonout.status_code = 401
+            return jsonout
+
+        logdir = APP.config.get('LOG_DIR', 'logs')
+        if not os.path.exists(logdir) and not os.path.isdir(logdir):
+            os.mkdir(logdir)
+
+        try:
+            (testdate, testset, testkver, testrel,
+             testresult, failedtests) = parseresults(test_result)
+        except Exception as err:
+            output = {'error': 'Invalid input file'}
+            jsonout = flask.jsonify(output)
+            jsonout.status_code = 400
+            return jsonout
+
+        relarch = testkver.split(".")
+        fver = relarch[-2].replace("fc", "", 1)
+        testarch = relarch[-1]
+
+        session = dbtools.dbsetup()
+        test = dbtools.KernelTest(
+            tester=form.username.data,
+            testdate=testdate,
+            testset=testset,
+            kver=kver,
+            fver=fver,
+            testarch=testarch,
+            testrel=testrel,
+            testresult=testresult,
+            failedtests=failedtests
+        )
+        try:
+            SESSION.add(test)
+            SESSION.commit()
+
+            filename = '%s.log' % test.testid
+            test_result.seek(0)
+            test_result.save(os.path.join(logdir, filename))
+            httpcode=200
+            output = {'message': 'Upload successful'}
+        except:
+            SESSION.rollback()
+            httpcode=500
+            output = {'error': 'Could not save data or result file'}
+    else:
+        output = {'error': 'Invalid request', 'messages': form.errors}
+
+    jsonout = flask.jsonify(output)
+    jsonout.status_code = httpcode
+    return jsonout
 
 ## Form used to upload new results
 
@@ -180,6 +245,15 @@ def upload():
 class UploadForm(flask_wtf.Form):
     ''' Form used to upload the results of kernel tests. '''
     username = wtf.TextField("Username", default='anon')
+    test_result = flask_wtf.FileField(
+        "Result file", validators=[flask_wtf.file_required()])
+
+
+class ApiUploadForm(flask_wtf.Form):
+    ''' Form used to upload the results of kernel tests via the api. '''
+    username = wtf.TextField("Username", default='anon')
+    api_token = wtf.TextField(
+        "API token", validators=[wtf.validators.Required()])
     test_result = flask_wtf.FileField(
         "Result file", validators=[flask_wtf.file_required()])
 
