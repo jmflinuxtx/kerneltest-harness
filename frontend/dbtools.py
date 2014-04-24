@@ -25,6 +25,7 @@ class KernelTest(BASE):
     testrel = sa.Column(sa.String(80), nullable=False)
     testresult = sa.Column(sa.Enum('PASS', 'FAIL', name='testresult'))
     failedtests = sa.Column(sa.Text(), nullable=True)
+    authenticated = sa.Column(sa.Boolean, nullable=False, default=False)
 
 
 class Release(BASE):
