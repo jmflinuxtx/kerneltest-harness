@@ -11,6 +11,7 @@ import flask
 import wtforms as wtf
 from flask.ext.fas_openid import FAS
 from flask.ext import wtf as flask_wtf
+from sqlalchemy.exc import SQLAlchemyError
 
 import dbtools
 
@@ -24,6 +25,14 @@ if 'KERNELTEST_CONFIG' in os.environ:  # pragma: no cover
 FAS = FAS(APP)
 
 SESSION = dbtools.create_session(APP.config['DB_URL'])
+
+
+## Exception generated when uploading the results into the database.
+
+class InvalidInputException(Exception):
+    ''' Exception raised when the user provided an invalid test result file.
+    '''
+    pass
 
 
 ## Generic functions
@@ -48,6 +57,47 @@ def parseresults(log):
         else:
             print "No match found for: %s" % (line)
     return testdate, testset, testkver, testrel, testresult, failedtests
+
+
+def upload_results(test_result, username):
+    ''' Actually try to upload the results into the database.
+    '''
+    logdir = APP.config.get('LOG_DIR', 'logs')
+    if not os.path.exists(logdir) and not os.path.isdir(logdir):
+        os.mkdir(logdir)
+
+    try:
+        (testdate, testset, testkver, testrel,
+         testresult, failedtests) = parseresults(test_result)
+    except Exception as err:
+        raise InvalidInputException('Could not parse these results')
+
+    relarch = testkver.split(".")
+    fver = relarch[-2].replace("fc", "", 1)
+    testarch = relarch[-1]
+
+    session = dbtools.dbsetup()
+    test = dbtools.KernelTest(
+        tester=username,
+        testdate=testdate,
+        testset=testset,
+        kver=kver,
+        fver=fver,
+        testarch=testarch,
+        testrel=testrel,
+        testresult=testresult,
+        failedtests=failedtests
+    )
+
+
+    SESSION.add(test)
+    SESSION.flush()
+
+    filename = '%s.log' % test.testid
+    test_result.seek(0)
+    test_result.save(os.path.join(logdir, filename))
+
+    return test
 
 
 ## Flask specific utility function
@@ -155,44 +205,22 @@ def upload():
                 'allowed to use it', 'error')
             return flask.redirect(flask.url_for('upload'))
 
-        logdir = APP.config.get('LOG_DIR', 'logs')
-        if not os.path.exists(logdir) and not os.path.isdir(logdir):
-            os.mkdir(logdir)
-
         try:
-            (testdate, testset, testkver, testrel,
-             testresult, failedtests) = parseresults(test_result)
-        except Exception as err:
-            flask.flash('Could not parse these results', 'error')
+            tests = upload_results(test_result, username)
+            SESSION.commit()
+        except InvalidInputException as err:
+            flask.flash(err)
+            return flask.redirect(flask.url_for('upload'))
+        except SQLAlchemyError as err:
+            flask.flash('Could not save the data in the database')
+            SESSION.rollback()
+            return flask.redirect(flask.url_for('upload'))
+        except OSError as err:
+            SESSION.delete(tests)
+            SESSION.commit()
+            flask.flash('Could not save the result file')
             return flask.redirect(flask.url_for('upload'))
 
-        relarch = testkver.split(".")
-        fver = relarch[-2].replace("fc", "", 1)
-        testarch = relarch[-1]
-
-        session = dbtools.dbsetup()
-        test = dbtools.KernelTest(
-            tester=form.username.data,
-            testdate=testdate,
-            testset=testset,
-            kver=kver,
-            fver=fver,
-            testarch=testarch,
-            testrel=testrel,
-            testresult=testresult,
-            failedtests=failedtests
-        )
-        try:
-            SESSION.add(test)
-            SESSION.commit()
-
-            filename = '%s.log' % test.testid
-            test_result.seek(0)
-            test_result.save(os.path.join(logdir, filename))
-            flask.flash('Upload successful')
-        except:
-            SESSION.rollback()
-            flask.flash('Upload failed', 'error')
 
     return flask.render_template(
         'upload.html',
@@ -216,49 +244,22 @@ def upload_autotest():
             jsonout.status_code = 401
             return jsonout
 
-        logdir = APP.config.get('LOG_DIR', 'logs')
-        if not os.path.exists(logdir) and not os.path.isdir(logdir):
-            os.mkdir(logdir)
-
         try:
-            (testdate, testset, testkver, testrel,
-             testresult, failedtests) = parseresults(test_result)
-        except Exception as err:
-            output = {'error': 'Invalid input file'}
-            jsonout = flask.jsonify(output)
-            jsonout.status_code = 400
-            return jsonout
-
-        relarch = testkver.split(".")
-        fver = relarch[-2].replace("fc", "", 1)
-        testarch = relarch[-1]
-
-        session = dbtools.dbsetup()
-        test = dbtools.KernelTest(
-            tester=form.username.data,
-            testdate=testdate,
-            testset=testset,
-            kver=kver,
-            fver=fver,
-            testarch=testarch,
-            testrel=testrel,
-            testresult=testresult,
-            failedtests=failedtests
-        )
-        try:
-            SESSION.add(test)
+            tests = upload_results(test_result, 'kerneltest')
             SESSION.commit()
-
-            filename = '%s.log' % test.testid
-            test_result.seek(0)
-            test_result.save(os.path.join(logdir, filename))
-            httpcode=200
-            output = {'message': 'Upload successful'}
-        except:
-            SESSION.rollback()
-            httpcode=500
-            output = {'error': 'Could not save data or result file'}
+        except InvalidInputException as err:
+            output = {'error': 'Invalid input file'}
+            httpcode = 400
+        except SQLAlchemyError as err:
+            output = {'error': 'Could not save data in the database'}
+            httpcode = 500
+        except OSError as err:
+            SESSION.delete(tests)
+            SESSION.commit()
+            output = {'error': 'Could not save the result file'}
+            httpcode = 500
     else:
+        httpcode = 400
         output = {'error': 'Invalid request', 'messages': form.errors}
 
     jsonout = flask.jsonify(output)
