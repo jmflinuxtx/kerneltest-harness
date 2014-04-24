@@ -20,4 +20,6 @@ To run a development instance:
 - Run the application
  $ python app.py
 
-The application should be accessible at http//127.0.0.1:5000
+The application should be accessible at http//127.0.0.1:5000.
+You might want to add your username to the list of ADMINS in default_config.py
+to get access to the admin interface.
