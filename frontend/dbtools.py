@@ -15,7 +15,7 @@ class KernelTest(BASE):
     testid = sa.Column(sa.Integer, primary_key=True)
     tester = sa.Column(sa.String(20), nullable=False, default='anon')
     testdate = sa.Column(
-        sa.DateTime, nullable=False, default=datetime.datetime.utcnow)
+        sa.String(80), nullable=False, default=datetime.datetime.utcnow)
     testset = sa.Column(sa.String(80), nullable=False)
     kver = sa.Column(sa.Text(), nullable=False)
     fver = sa.Column(sa.Integer, nullable=True)
