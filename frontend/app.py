@@ -59,7 +59,7 @@ def parseresults(log):
     return testdate, testset, testkver, testrel, testresult, failedtests
 
 
-def upload_results(test_result, username):
+def upload_results(test_result, username, authenticated=False):
     ''' Actually try to upload the results into the database.
     '''
     logdir = APP.config.get('LOG_DIR', 'logs')
@@ -86,7 +86,8 @@ def upload_results(test_result, username):
         testarch=testarch,
         testrel=testrel,
         testresult=testresult,
-        failedtests=failedtests
+        failedtests=failedtests,
+        authenticated=authenticated,
     )
 
     SESSION.add(test)
@@ -205,7 +206,8 @@ def upload():
             return flask.redirect(flask.url_for('upload'))
 
         try:
-            tests = upload_results(test_result, username)
+            tests = upload_results(
+                test_result, username, authenticated=True)
             SESSION.commit()
         except InvalidInputException as err:
             flask.flash(err)
@@ -244,7 +246,8 @@ def upload_autotest():
             return jsonout
 
         try:
-            tests = upload_results(test_result, 'kerneltest')
+            tests = upload_results(
+                test_result, 'kerneltest', authenticated=True)
             SESSION.commit()
         except InvalidInputException as err:
             output = {'error': 'Invalid input file'}
@@ -278,7 +281,8 @@ def upload_autotest():
         username = form.username.data
 
         try:
-            tests = upload_results(test_result, username)
+            tests = upload_results(
+                test_result, username, authenticated=False)
             SESSION.commit()
         except InvalidInputException as err:
             output = {'error': 'Invalid input file'}
