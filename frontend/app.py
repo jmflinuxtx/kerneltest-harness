@@ -9,7 +9,6 @@ from functools import wraps
 
 import flask
 import wtforms as wtf
-from flask.ext.fas_openid import FAS
 from flask.ext import wtf as flask_wtf
 
 import dbtools
@@ -19,9 +18,6 @@ APP = flask.Flask(__name__)
 APP.config.from_object('default_config')
 if 'KERNELTEST_CONFIG' in os.environ:  # pragma: no cover
     APP.config.from_envvar('KERNELTEST_CONFIG')
-
-# Set up FAS extension
-FAS = FAS(APP)
 
 SESSION = dbtools.create_session(APP.config['DB_URL'])
 
@@ -52,27 +48,6 @@ def parseresults(log):
 
 ## Flask specific utility function
 
-def is_admin():
-    ''' Return wether the user is recognized as an admin or not. '''
-    if not hasattr(flask.g, 'fas_user') or not flask.g.fas_user:
-        return False
-    else:
-        return flask.g.fas_user.username in APP.config.get('ADMINS', [])
-
-
-def admin_required(function):
-    ''' Flask decorator to ensure that the user is logged in against FAS.
-    '''
-    @wraps(function)
-    def decorated_function(*args, **kwargs):
-        ''' Do the actual work of the decorator. '''
-        if flask.g.fas_user is None:
-            return flask.redirect(flask.url_for(
-                'login', next=flask.request.url))
-
-        return function(*args, **kwargs)
-    return decorated_function
-
 
 @APP.context_processor
 def inject_variables():
@@ -80,13 +55,11 @@ def inject_variables():
     '''
     releases = dbtools.getcurrentreleases(SESSION)
     rawhide = dbtools.getrawhide(SESSION)
-    user_is_admin = is_admin()
 
     return dict(
         date=datetime.datetime.utcnow().strftime("%a %b %d %Y %H:%M"),
         releases=releases,
         rawhide=rawhide,
-        is_admin=user_is_admin,
     )
 
 
@@ -199,44 +172,6 @@ def upload():
         'admin.html',
         form=form,
     )
-
-
-@APP.route('/login', methods=['GET', 'POST'])
-def login():
-    ''' Login mechanism for this application.
-    '''
-    next_url = flask.url_for('index')
-    if 'next' in flask.request.args:
-        next_url = flask.request.args['next']
-    elif 'next' in flask.request.form:
-        next_url = flask.request.form['next']
-
-    if next_url == flask.url_for('login'):
-        next_url = flask.url_for('index')
-
-    if hasattr(flask.g, 'fas_user') and flask.g.fas_user is not None:
-        return flask.redirect(next_url)
-    else:
-        return FAS.login(return_url=next_url, groups=[])
-
-
-@APP.route('/logout')
-def logout():
-    ''' Log out if the user is logged in other do nothing.
-    Return to the index page at the end.
-    '''
-    next_url = flask.url_for('index')
-    if 'next' in flask.request.args:
-        next_url = flask.request.args['next']
-    elif 'next' in flask.request.form:
-        next_url = flask.request.form['next']
-
-    if next_url == flask.url_for('login'):
-        next_url = flask.url_for('index')
-    if hasattr(flask.g, 'fas_user') and flask.g.fas_user is not None:
-        FAS.logout()
-        flask.flash("You are no longer logged-in")
-    return flask.redirect(next_url)
 
 
 ## Form used to upload new results
