@@ -14,7 +14,7 @@ def createfiles():
     ''' Creates all the html files. '''
 
     # Create the output if it does not already exists
-    if not os.path.exists('output'):
+    if not os.path.exists('output') and not os.path.isdir('output'):
         os.mkdir('output')
 
     session = dbtools.dbsetup()
