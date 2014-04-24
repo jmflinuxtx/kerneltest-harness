@@ -9,6 +9,7 @@ from functools import wraps
 
 import flask
 import wtforms as wtf
+from flask.ext.fas_openid import FAS
 from flask.ext import wtf as flask_wtf
 
 import dbtools
@@ -18,6 +19,9 @@ APP = flask.Flask(__name__)
 APP.config.from_object('default_config')
 if 'KERNELTEST_CONFIG' in os.environ:  # pragma: no cover
     APP.config.from_envvar('KERNELTEST_CONFIG')
+
+# Set up FAS extension
+FAS = FAS(APP)
 
 SESSION = dbtools.create_session(APP.config['DB_URL'])
 
@@ -47,6 +51,19 @@ def parseresults(log):
 
 
 ## Flask specific utility function
+
+def fas_login_required(function):
+    ''' Flask decorator to ensure that the user is logged in against FAS.
+    '''
+    @wraps(function)
+    def decorated_function(*args, **kwargs):
+        ''' Do the actual work of the decorator. '''
+        if not hasattr(flask.g, 'fas_user') or flask.g.fas_user is None:
+            return flask.redirect(flask.url_for(
+                'login', next=flask.request.url))
+
+        return function(*args, **kwargs)
+    return decorated_function
 
 
 @APP.context_processor
@@ -124,6 +141,7 @@ def logs(logid):
 
 
 @APP.route('/upload/', methods=['GET', 'POST'])
+@fas_login_required
 def upload():
     ''' Display the page where new results can be uploaded. '''
     form = UploadForm()
@@ -181,8 +199,8 @@ def upload():
         form=form,
     )
 
-@APP.route('/api/upload/', methods=['POST'])
-def api_upload():
+@APP.route('/upload/autotest', methods=['POST'])
+def upload_autotest():
     ''' Specific endpoint for some clients to upload their results. '''
     form = ApiUploadForm(csrf_enabled=False)
     httpcode=200
@@ -247,8 +265,46 @@ def api_upload():
     jsonout.status_code = httpcode
     return jsonout
 
-## Form used to upload new results
 
+@APP.route('/login', methods=['GET', 'POST'])
+def login():
+    ''' Login mechanism for this application.
+    '''
+    next_url = flask.url_for('index')
+    if 'next' in flask.request.args:
+        next_url = flask.request.args['next']
+    elif 'next' in flask.request.form:
+        next_url = flask.request.form['next']
+
+    if next_url == flask.url_for('login'):
+        next_url = flask.url_for('index')
+
+    if hasattr(flask.g, 'fas_user') and flask.g.fas_user is not None:
+        return flask.redirect(next_url)
+    else:
+        return FAS.login(return_url=next_url, groups=[])
+
+
+@APP.route('/logout')
+def logout():
+    ''' Log out if the user is logged in other do nothing.
+    Return to the index page at the end.
+    '''
+    next_url = flask.url_for('index')
+    if 'next' in flask.request.args:
+        next_url = flask.request.args['next']
+    elif 'next' in flask.request.form:
+        next_url = flask.request.form['next']
+
+    if next_url == flask.url_for('login'):
+        next_url = flask.url_for('index')
+    if hasattr(flask.g, 'fas_user') and flask.g.fas_user is not None:
+        FAS.logout()
+        flask.flash("You are no longer logged-in")
+    return flask.redirect(next_url)
+
+
+## Form used to upload new results
 
 class UploadForm(flask_wtf.Form):
     ''' Form used to upload the results of kernel tests. '''
