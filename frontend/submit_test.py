@@ -2,19 +2,26 @@
 #
 # Licensed under the terms of the GNU GPL License version 2
 
-import errno
+import argparse
 import os
 import sys
 
 import dbtools
-import generateindex
+import generate_reports
 
-import mysql.connector
-import cgi, cgitb
-cgitb.enable()
+def setup_parser():
+    ''' Set the main arguments.
+    '''
+    parser = argparse.ArgumentParser(prog="kernel-test")
+    # General connection options
+    parser.add_argument('--user', dest="username", default='anon',
+                        help="FAS username")
+    parser.add_argument('logfile', help="Log file from the tests")
+    return parser
 
 
 def parseresults(logfile):
+    ''' Parse the result of the kernel tests. '''
     with open (logfile, 'r') as log:
         for line in log:
             if "Date: " in line:
@@ -35,53 +42,52 @@ def parseresults(logfile):
                 print "No match found for: %s" % (line)
     return testdate, testset, testkver, testrel, testresult, failedtests
 
-def checklogdir(logdir):
-    try:
-        os.makedirs(logdir)
-    except OSError as exception:
-        if exception.errno != errno.EEXIST:
-            raise
 
-if __name__ == '__main__':
+def main():
     logdir = 'logs'
-    checklogdir(logdir)
-    checklogdir('tmp')
-    form = cgi.FieldStorage()
-    if form.getvalue("user"):
-        tester = form.getvalue("user")
-    else:
-        tester = 'anon'
-    fileitem = form['filename']
-    if fileitem.filename:
-        # strip leading path from file name to avoid 
-        # directory traversal attacks
-        fn = os.path.basename(fileitem.filename)
-        open('tmp/' + fn, 'wb').write(fileitem.file.read())
-        logfile = 'tmp/' + fn
+    if not os.path.exists(logdir) and not os.path.isdir(logdir):
+        os.mkdir(logdir)
 
-    print "Content-Type: text/html\n"
-    testdate, testset, testkver, testrel, testresult, failedtests = parseresults(logfile)
+    parser = setup_parser()
+    # Parse the commandline
+    try:
+        arg = parser.parse_args()
+    except argparse.ArgumentTypeError, err:
+        print "\nError: {0}".format(err)
+        return 2
+
+    (testdate, testset, testkver, testrel,
+     testresult, failedtests) = parseresults(args.logfile)
+
     relarch = testkver.split(".")
     fver = relarch[-2].replace("fc","",1)
     testarch = relarch[-1]
-    db = dbtools.dbsetup()
-    cursor = db.cursor()
-    insert = """
-    INSERT INTO kerneltest
-        (tester, testdate, testset, kver, fver, testarch, testrel, testresult, failedtests)
-        VALUES
-        ('%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s');
-        """ % (tester, testdate, testset, testkver, fver, testarch, testrel, testresult, failedtests)
+
+    session = dbtools.dbsetup()
+    test = dbtools.KernelTest(
+        tester=args.user,
+        testdate=testdate,
+        testset=testset,
+        kver=kver,
+        fver=fver,
+        testarch=testarch,
+        testrel=testrel,
+        testresult=testresult,
+        failedtests=failedtests
+    )
     try:
-        cursor.execute(insert)
-        testid = cursor.lastrowid
-        db.commit()
+        session.add(test)
+        session.commit()
         print "db success"
-    except:
-        db.rollback()
-        print "db fail"
-    db.close()
-    if 'testid' in locals():
-        logdest = logdir + "/" + str(testid) + ".log"
+
+        logdest = logdir + "/" + str(test.testid) + ".log"
         os.rename(logfile, logdest)
-        generateindex.createfiles()
+        generate_reports.createfiles()
+
+    except:
+        session.rollback()
+        print "db fail"
+
+
+if __name__ == '__main__':
+    main()
