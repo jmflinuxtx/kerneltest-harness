@@ -58,12 +58,6 @@ def create_session(
     return scopedsession
 
 
-def dbsetup():
-    ''' Return the session connecting to the database. '''
-    from dbconfig import Config
-    return create_session(Config.db_url())
-
-
 def getcurrentreleases(session):
     ''' Return the Release information for all active releases. '''
     query = session.query(

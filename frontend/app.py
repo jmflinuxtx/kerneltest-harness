@@ -76,7 +76,6 @@ def upload_results(test_result, username, authenticated=False):
     fver = relarch[-2].replace("fc", "", 1)
     testarch = relarch[-1]
 
-    session = dbtools.dbsetup()
     test = dbtools.KernelTest(
         tester=username,
         testdate=testdate,
