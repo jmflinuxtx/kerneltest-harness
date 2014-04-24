@@ -1,0 +1,39 @@
+{% extends "master.html" %}
+
+{% block content %}
+<a href='http://fedoraproject.org/wiki/KernelTestingInitiative'>
+    <h1>Fedora Kernel Test Results</h1>
+</a>
+<table border='1' style='width:400px'>
+<tr>
+    <th>Kernel</th>
+    <th>Release</th>
+    <th>Arch</th>
+    <th>Result</th>
+    <th>Logs</th>
+</tr>
+{% for result in test_matrix %}
+    <tr>
+        <td>
+            <a href='{{ url_for("kernel", kernel=result.kver) }}'>
+                {{ result.kver }}
+            </a>
+        </td>
+        <td>
+            <a href='{{ url_for("release", release=result.fver) }}'>
+                {% if release == rawhide %} Rawhide {% else %}
+                Fedora {{ result.fver }} {% endif %}
+            </a>
+        </td>
+        <td>{{ result.testarch }}</td>
+        <td>{{ result.testresult }}</td>
+        <td>
+            <a href='{{ url_for("logs", logid=result.testid) }}'>
+                logs
+            </a>
+        </td>
+    </tr>
+{% endfor %}
+</table>
+
+{% endblock %}

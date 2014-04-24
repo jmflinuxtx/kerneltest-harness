@@ -1,0 +1,24 @@
+Kernel-test web application
+===========================
+
+This is a small web application to display the results of the different
+tests performed on kernels.
+
+Requirements (as Fedora RPM):
+- python-flask
+- python-flask-wtf
+- python-wtforms
+- python-sqlalchemy
+
+
+To run a development instance:
+
+- Create the database
+ $ python createdb.py
+
+- Run the application
+ $ python app.py
+
+The application should be accessible at http//127.0.0.1:5000.
+You might want to add your username to the list of ADMINS in default_config.py
+to get access to the admin interface.

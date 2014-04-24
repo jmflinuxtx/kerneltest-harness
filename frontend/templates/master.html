@@ -1,0 +1,60 @@
+<html>
+
+<head>
+  <title>Kernel Test Results </title>
+  <link rel='stylesheet' type='text/css'
+      href='http://fedoraproject.org/static/css/fedora.css' />
+</head>
+
+<body>
+<div id="wrapper">
+  <div id='head h1 a'>
+    <img src='http://fedoraproject.org/w/uploads/3/3c/Fedora_logo.png'>
+  </div>
+
+  <div id="wrapper2">
+    <div id='sidebar'>
+      <div id='nav'>
+        <a href='{{ url_for("index") }}'>Home</a>
+        <ul>
+          {% for release in releases %}
+          <li>
+            {% if release == rawhide %}
+              <a href='rawhide.html'>Fedora Rawhide</a>
+            {% else %}
+              <a href='{{ url_for("release", release=release.releasenum) }}'>
+                  Fedora {{ release.releasenum }}
+              </a>
+            {% endif %}
+          </li>
+          {% endfor %}
+        </ul>
+        <h2>Authentication</h2>
+        {% if not g.fas_user %}
+        <a href='{{ url_for("login") }}'>Login</a>
+        {% else %}
+        <a href='{{ url_for("upload") }}'>Upload your results</a>
+        <a href='{{ url_for("logout") }}'>Logout</a>
+        {% endif %}
+
+      </div>
+    </div>
+
+    <div id='content'>
+      {% with messages = get_flashed_messages(with_categories=true) %}
+          {% if category, messages %}
+          <ul id="flashes">
+              {% for category, message in messages %}
+              <li class="{{ category }}">{{ message }}</li>
+              {% endfor %}
+          </ul>
+          {% endif %}
+      {% endwith %}
+      {% block content %}{% endblock %}
+    </div>
+  </div>
+</div>
+
+</body>
+
+</html>
