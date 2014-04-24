@@ -19,8 +19,8 @@ class KernelTest(BASE):
     testdate = sa.Column(
         sa.String(80), nullable=False, default=datetime.datetime.utcnow)
     testset = sa.Column(sa.String(80), nullable=False)
-    kver = sa.Column(sa.Text(), nullable=False)
-    fver = sa.Column(sa.Integer, nullable=True)
+    kver = sa.Column(sa.Text(), nullable=False, index=True)
+    fver = sa.Column(sa.Integer, nullable=True, index=True)
     testarch = sa.Column(sa.String(8), nullable=False)
     testrel = sa.Column(sa.String(80), nullable=False)
     testresult = sa.Column(sa.Enum('PASS', 'FAIL', name='testresult'))
