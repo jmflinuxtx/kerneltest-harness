@@ -32,17 +32,17 @@ def parseresults(log):
     ''' Parse the result of the kernel tests. '''
     for line in log:
         if "Date: " in line:
-            testdate = line.replace("Date: ","",1).rstrip('\n')
+            testdate = line.replace("Date: ", "", 1).rstrip('\n')
         elif "Test set: " in line:
-            testset = line.replace("Test set: ","",1).rstrip('\n')
+            testset = line.replace("Test set: ", "", 1).rstrip('\n')
         elif "Kernel: " in line:
-            testkver = line.replace("Kernel: ","",1).rstrip('\n')
+            testkver = line.replace("Kernel: ", "", 1).rstrip('\n')
         elif "Release: " in line:
-            testrel = line.replace("Release: ","",1).rstrip('\n')
+            testrel = line.replace("Release: ", "", 1).rstrip('\n')
         elif "Result: " in line:
-            testresult = line.replace("Result: ","",1).rstrip('\n')
+            testresult = line.replace("Result: ", "", 1).rstrip('\n')
         elif "Failed Tests: " in line:
-            failedtests = line.replace("Failed Tests: ","",1).rstrip('\n')
+            failedtests = line.replace("Failed Tests: ", "", 1).rstrip('\n')
         elif "========" in line:
             break
         else:
@@ -106,6 +106,7 @@ def index():
         test_matrix=test_matrix,
     )
 
+
 @APP.route('/release/<release>')
 def release(release):
     ''' Display page with information about a specific release. '''
@@ -117,6 +118,7 @@ def release(release):
         kernels=kernels,
     )
 
+
 @APP.route('/kernel/<kernel>')
 def kernel(kernel):
     ''' Display page with information about a specific kernel. '''
@@ -127,6 +129,7 @@ def kernel(kernel):
         kernel=kernel,
         tests=tests,
     )
+
 
 @APP.route('/logs/<logid>')
 def logs(logid):
@@ -148,13 +151,13 @@ def admin():
 
         try:
             (testdate, testset, testkver, testrel,
-            testresult, failedtests) = parseresults(test_result)
+             testresult, failedtests) = parseresults(test_result)
         except Exception as err:
             flask.flash('Could not parse these results', 'error')
             return flask.redirect(flask.url_for('admin'))
 
         relarch = testkver.split(".")
-        fver = relarch[-2].replace("fc","",1)
+        fver = relarch[-2].replace("fc", "", 1)
         testarch = relarch[-1]
 
         session = dbtools.dbsetup()
