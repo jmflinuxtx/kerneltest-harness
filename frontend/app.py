@@ -17,8 +17,8 @@ import dbtools
 
 APP = flask.Flask(__name__)
 APP.config.from_object('default_config')
-if 'PKGDB2_CONFIG' in os.environ:  # pragma: no cover
-    APP.config.from_envvar('PKGDB2_CONFIG')
+if 'KERNELTEST_CONFIG' in os.environ:  # pragma: no cover
+    APP.config.from_envvar('KERNELTEST_CONFIG')
 
 # Set up FAS extension
 FAS = FAS(APP)
