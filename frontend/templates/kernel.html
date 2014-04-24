@@ -6,22 +6,15 @@
 <table border='1' style='width:400px'>
 <tr>
     <th>Kernel</th>
-    <th>Release</th>
-    <th>Arch</th>
     <th>Result</th>
     <th>log</th>
 </tr>
 {% for test in tests %}
     <tr>
         <td>{{ test.kver }}</td>
-        <td>
-            <a href='{{ url_for("release", release=test.fver) }}'>
-                {{ test.fver }}
-            </a>
-        </td>
-        <td>{{ test.testarch }}</td>
         <td>{{ test.testresult }}</td>
-        <td><a href='logs/{{ kernel.testid }}.log'>logs</a></td>
+        <td><a href='{{ url_for("logs", logid=test.testid) }}'>
+                logs </a>
     </tr>
 {% endfor %}
 </table>
