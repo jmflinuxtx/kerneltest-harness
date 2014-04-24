@@ -208,6 +208,7 @@ def upload():
             tests = upload_results(
                 test_result, username, authenticated=True)
             SESSION.commit()
+            flask.flash('Upload successful!')
         except InvalidInputException as err:
             flask.flash(err)
             return flask.redirect(flask.url_for('upload'))
@@ -248,6 +249,7 @@ def upload_autotest():
             tests = upload_results(
                 test_result, 'kerneltest', authenticated=True)
             SESSION.commit()
+            output = {'message': 'Upload successful!'}
         except InvalidInputException as err:
             output = {'error': 'Invalid input file'}
             httpcode = 400
@@ -293,6 +295,7 @@ def upload_anonymous():
             tests = upload_results(
                 test_result, username, authenticated=authenticated)
             SESSION.commit()
+            output = {'message': 'Upload successful!'}
         except InvalidInputException as err:
             output = {'error': 'Invalid input file'}
             httpcode = 400
