@@ -89,7 +89,6 @@ def upload_results(test_result, username):
         failedtests=failedtests
     )
 
-
     SESSION.add(test)
     SESSION.flush()
 
@@ -221,17 +220,17 @@ def upload():
             flask.flash('Could not save the result file')
             return flask.redirect(flask.url_for('upload'))
 
-
     return flask.render_template(
         'upload.html',
         form=form,
     )
 
+
 @APP.route('/upload/autotest', methods=['POST'])
 def upload_autotest():
     ''' Specific endpoint for some clients to upload their results. '''
     form = ApiUploadForm(csrf_enabled=False)
-    httpcode=200
+    httpcode = 200
     error = False
 
     if form.validate_on_submit():
@@ -246,6 +245,40 @@ def upload_autotest():
 
         try:
             tests = upload_results(test_result, 'kerneltest')
+            SESSION.commit()
+        except InvalidInputException as err:
+            output = {'error': 'Invalid input file'}
+            httpcode = 400
+        except SQLAlchemyError as err:
+            output = {'error': 'Could not save data in the database'}
+            httpcode = 500
+        except OSError as err:
+            SESSION.delete(tests)
+            SESSION.commit()
+            output = {'error': 'Could not save the result file'}
+            httpcode = 500
+    else:
+        httpcode = 400
+        output = {'error': 'Invalid request', 'messages': form.errors}
+
+    jsonout = flask.jsonify(output)
+    jsonout.status_code = httpcode
+    return jsonout
+
+
+@APP.route('/upload/anonymous', methods=['POST'])
+def upload_autotest():
+    ''' Specific endpoint for some clients to upload their results. '''
+    form = UploadForm(csrf_enabled=False)
+    httpcode = 200
+    error = False
+
+    if form.validate_on_submit():
+        test_result = form.test_result.data
+        username = form.username.data
+
+        try:
+            tests = upload_results(test_result, username)
             SESSION.commit()
         except InvalidInputException as err:
             output = {'error': 'Invalid input file'}
