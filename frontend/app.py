@@ -279,6 +279,10 @@ def upload_autotest():
     if form.validate_on_submit():
         test_result = form.test_result.data
         username = form.username.data
+        authenticated = False
+        if hasattr(flask.g, 'fas_user') and flask.g.fas_user:
+            username = flask.g.fas_user.username
+            authenticated = True
 
         if username == 'kerneltest':
             flask.flash(
@@ -288,7 +292,7 @@ def upload_autotest():
 
         try:
             tests = upload_results(
-                test_result, username, authenticated=False)
+                test_result, username, authenticated=authenticated)
             SESSION.commit()
         except InvalidInputException as err:
             output = {'error': 'Invalid input file'}
