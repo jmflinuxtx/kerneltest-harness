@@ -150,9 +150,8 @@ def logs(logid):
     return flask.send_from_directory(logdir, '%s.log' % logid)
 
 
-@APP.route('/admin/', methods=['GET', 'POST'])
-@admin_required
-def admin():
+@APP.route('/upload/', methods=['GET', 'POST'])
+def upload():
     ''' Display the admin page where new results can be uploaded. '''
     form = UploadForm()
     if form.validate_on_submit():
@@ -166,7 +165,7 @@ def admin():
              testresult, failedtests) = parseresults(test_result)
         except Exception as err:
             flask.flash('Could not parse these results', 'error')
-            return flask.redirect(flask.url_for('admin'))
+            return flask.redirect(flask.url_for('upload'))
 
         relarch = testkver.split(".")
         fver = relarch[-2].replace("fc", "", 1)
@@ -174,7 +173,7 @@ def admin():
 
         session = dbtools.dbsetup()
         test = dbtools.KernelTest(
-            tester=args.user,
+            tester=form.username.data,
             testdate=testdate,
             testset=testset,
             kver=kver,
@@ -245,6 +244,7 @@ def logout():
 
 class UploadForm(flask_wtf.Form):
     ''' Form used to upload the results of kernel tests. '''
+    username = wtf.TextField("Username", default='anon')
     test_result = flask_wtf.FileField(
         "Result file", validators=[flask_wtf.file_required()])
 
