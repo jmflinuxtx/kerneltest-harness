@@ -270,7 +270,7 @@ def upload_autotest():
 
 
 @APP.route('/upload/anonymous', methods=['POST'])
-def upload_autotest():
+def upload_anonymous():
     ''' Specific endpoint for some clients to upload their results. '''
     form = UploadForm(csrf_enabled=False)
     httpcode = 200
