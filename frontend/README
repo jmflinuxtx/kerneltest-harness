@@ -8,7 +8,6 @@ Requirements (as Fedora RPM):
 - python-flask
 - python-flask-wtf
 - python-wtforms
-- python-fedora-flask
 - python-sqlalchemy
 
 
