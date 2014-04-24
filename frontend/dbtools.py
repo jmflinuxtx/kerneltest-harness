@@ -23,7 +23,7 @@ class KernelTest(BASE):
     fver = sa.Column(sa.Integer, nullable=True)
     testarch = sa.Column(sa.String(8), nullable=False)
     testrel = sa.Column(sa.String(80), nullable=False)
-    testresult = sa.Column(sa.Enum(['PASS', 'FAIL'], name='testresult')),
+    testresult = sa.Column(sa.Enum('PASS', 'FAIL', name='testresult'))
     failedtests = sa.Column(sa.Text(), nullable=True)
 
 
@@ -31,7 +31,7 @@ class Release(BASE):
     __tablename__ = 'releases'
     releasenum = sa.Column(sa.Integer, primary_key=True)
     support = sa.Column(
-        sa.Enum(['RAWHIDE', 'TEST', 'RELEASE', 'RETIRED'], name='support')),
+        sa.Enum('RAWHIDE', 'TEST', 'RELEASE', 'RETIRED', name='support'))
 
 
 def create_session(
