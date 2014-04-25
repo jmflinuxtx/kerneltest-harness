@@ -189,6 +189,17 @@ def logs(logid):
     return flask.send_from_directory(logdir, '%s.log' % logid)
 
 
+@APP.route('/stats')
+def stats():
+    ''' Display some stats about the data gathered. '''
+    stats = dbtools.get_stats(SESSION)
+
+    return flask.render_template(
+        'stats.html',
+        stats=stats,
+    )
+
+
 @APP.route('/upload/', methods=['GET', 'POST'])
 @fas_login_required
 def upload():
