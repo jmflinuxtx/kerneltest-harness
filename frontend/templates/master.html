@@ -20,7 +20,9 @@
           {% for release in releases %}
           <li>
             {% if release == rawhide %}
-              <a href='rawhide.html'>Fedora Rawhide</a>
+                <a href='{{ url_for("release", release=release.releasenum) }}'>
+                    Fedora Rawhide
+                </a>
             {% else %}
               <a href='{{ url_for("release", release=release.releasenum) }}'>
                   Fedora {{ release.releasenum }}
