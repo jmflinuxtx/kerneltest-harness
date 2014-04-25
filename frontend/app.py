@@ -3,6 +3,7 @@
 # Licensed under the terms of the GNU GPL License version 2
 
 import datetime
+import logging
 import os
 import sys
 from functools import wraps
@@ -23,6 +24,11 @@ if 'KERNELTEST_CONFIG' in os.environ:  # pragma: no cover
 
 # Set up FAS extension
 FAS = FAS(APP)
+
+# Log to stderr as well
+STDERR_LOG = logging.StreamHandler(sys.stderr)
+STDERR_LOG.setLevel(logging.INFO)
+APP.logger.addHandler(STDERR_LOG)
 
 SESSION = dbtools.create_session(APP.config['DB_URL'])
 
@@ -55,7 +61,7 @@ def parseresults(log):
         elif "========" in line:
             break
         else:
-            print "No match found for: %s" % (line)
+            APP.logger.info("No match found for: %s", line)
     return testdate, testset, testkver, testrel, testresult, failedtests
 
 
@@ -70,6 +76,7 @@ def upload_results(test_result, username, authenticated=False):
         (testdate, testset, testkver, testrel,
          testresult, failedtests) = parseresults(test_result)
     except Exception as err:
+        APP.logger.debug(err)
         raise InvalidInputException('Could not parse these results')
 
     relarch = testkver.split(".")
@@ -221,13 +228,16 @@ def upload():
             SESSION.commit()
             flask.flash('Upload successful!')
         except InvalidInputException as err:
-            flask.flash(err)
+            APP.logger.debug(err)
+            flask.flash(err.message)
             return flask.redirect(flask.url_for('upload'))
         except SQLAlchemyError as err:
+            APP.logger.exception(err)
             flask.flash('Could not save the data in the database')
             SESSION.rollback()
             return flask.redirect(flask.url_for('upload'))
         except OSError as err:
+            APP.logger.exception(err)
             SESSION.delete(tests)
             SESSION.commit()
             flask.flash('Could not save the result file')
@@ -262,12 +272,15 @@ def upload_autotest():
             SESSION.commit()
             output = {'message': 'Upload successful!'}
         except InvalidInputException as err:
+            APP.logger.debug(err)
             output = {'error': 'Invalid input file'}
             httpcode = 400
         except SQLAlchemyError as err:
+            APP.logger.exception(err)
             output = {'error': 'Could not save data in the database'}
             httpcode = 500
         except OSError as err:
+            APP.logger.exception(err)
             SESSION.delete(tests)
             SESSION.commit()
             output = {'error': 'Could not save the result file'}
@@ -309,12 +322,15 @@ def upload_anonymous():
             SESSION.commit()
             output = {'message': 'Upload successful!'}
         except InvalidInputException as err:
+            APP.logger.debug(err)
             output = {'error': 'Invalid input file'}
             httpcode = 400
         except SQLAlchemyError as err:
+            APP.logger.exception(err)
             output = {'error': 'Could not save data in the database'}
             httpcode = 500
         except OSError as err:
+            APP.logger.exception(err)
             SESSION.delete(tests)
             SESSION.commit()
             output = {'error': 'Could not save the result file'}
