@@ -60,8 +60,8 @@ def parseresults(log):
             failedtests = line.replace("Failed Tests: ", "", 1).rstrip('\n')
         elif "========" in line:
             break
-        else:
-            APP.logger.info("No match found for: %s", line)
+        #else:
+            #APP.logger.info("No match found for: %s", line)
     return testdate, testset, testkver, testrel, testresult, failedtests
 
 
