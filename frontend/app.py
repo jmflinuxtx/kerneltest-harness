@@ -25,6 +25,31 @@ if 'KERNELTEST_CONFIG' in os.environ:  # pragma: no cover
 # Set up FAS extension
 FAS = FAS(APP)
 
+
+# Set up the logger
+## Send emails for big exception
+mail_admin = APP.config.get('MAIL_ADMIN', None)
+if mail_admin and not APP.debug:
+    MAIL_HANDLER = logging.handlers.SMTPHandler(
+        APP.config.get('SMTP_SERVER', '127.0.0.1'),
+        'nobody@fedoraproject.org',
+        mail_admin,
+        'PkgDB2 error')
+    MAIL_HANDLER.setFormatter(logging.Formatter('''
+        Message type:       %(levelname)s
+        Location:           %(pathname)s:%(lineno)d
+        Module:             %(module)s
+        Function:           %(funcName)s
+        Time:               %(asctime)s
+
+        Message:
+
+        %(message)s
+    '''))
+    MAIL_HANDLER.setLevel(logging.ERROR)
+    APP.logger.addHandler(MAIL_HANDLER)
+
+
 # Log to stderr as well
 STDERR_LOG = logging.StreamHandler(sys.stderr)
 STDERR_LOG.setLevel(logging.INFO)
