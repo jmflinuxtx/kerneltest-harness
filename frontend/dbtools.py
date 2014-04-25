@@ -82,15 +82,17 @@ def getrawhide(session):
     return query.first()
 
 
-def getarches(session, release):
+def getarches(session, release=None):
     ''' Return all distinct arch for the specified release. '''
     query = session.query(
         sa.func.distinct(KernelTest.testarch)
-    ).filter(
-        KernelTest.fver == release
     ).order_by(
         KernelTest.testarch.desc()
     )
+
+    if release is not None:
+        query = query.filter(KernelTest.fver == release)
+
     return query.all()
 
 
@@ -111,15 +113,16 @@ def getlatest(session, release, arch):
     return query.first()
 
 
-def getkernelsbyrelease(session, release):
+def getkernelsbyrelease(session, release=None):
     ''' Return the different kernel version for the release specified. '''
     query = session.query(
         sa.func.distinct(KernelTest.kver)
-    ).filter(
-        KernelTest.fver == release
     ).order_by(
         KernelTest.kver.desc()
     )
+
+    if release is not None:
+        query = query.filter(KernelTest.fver == release)
 
     return query.all()
 
@@ -146,3 +149,65 @@ def getallkernels(session):
     )
 
     return query.all()
+
+
+def getresultsbyrelease(session, release):
+    ''' Return test results for the specified kernel version. '''
+    query = session.query(
+        KernelTest
+    ).filter(
+        KernelTest.fver == release
+    ).order_by(
+        KernelTest.testid.desc()
+    )
+
+    return query.all()
+
+
+def getreleasebykernel(session, kernel=None):
+    ''' Return the different releases for the kernel specified. '''
+    query = session.query(
+        sa.func.distinct(KernelTest.fver)
+    ).filter(
+        KernelTest.kver == kernel
+    ).order_by(
+        KernelTest.kver.desc()
+    )
+
+    return query.all()
+
+
+def get_stats(session):
+    ''' Return a dictionnary containing statistics about the data in the
+    database.
+    '''
+    output = {}
+
+    output['arches'] = [arch[0] for arch in getarches(session)]
+    output['kernels'] = [rel[0] for rel in getkernelsbyrelease(session)]
+    output['n_test'] = session.query(KernelTest).count()
+
+    # Tests per release
+    releases = session.query(Release).all()
+    rel_stats = {}
+    for release in releases:
+        tmp = {}
+        tmp['kernels'] = getkernelsbyrelease(session, release.releasenum)
+        tmp['tests'] = getresultsbyrelease(session, release.releasenum)
+        tmp['arches'] = set([test.testarch for test in tmp['tests']])
+        tmp['testers'] = set([test.tester for test in tmp['tests']])
+        rel_stats[release.releasenum] = tmp
+    output['rel_stats'] = rel_stats
+
+    # Tests per kernel
+    ker_stats = {}
+    for kernel in output['kernels']:
+        tmp = {}
+        tmp['releases'] = getreleasebykernel(session, kernel)
+        tmp['tests'] = getresultsbykernel(session, kernel)
+        tmp['arches'] = set([test.testarch for test in tmp['tests']])
+        tmp['testers'] = set([test.tester for test in tmp['tests']])
+        ker_stats[kernel] = tmp
+    output['ker_stats'] = ker_stats
+
+    return output

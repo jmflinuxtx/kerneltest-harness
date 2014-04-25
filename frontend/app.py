@@ -3,6 +3,7 @@
 # Licensed under the terms of the GNU GPL License version 2
 
 import datetime
+import logging
 import os
 import sys
 from functools import wraps
@@ -23,6 +24,36 @@ if 'KERNELTEST_CONFIG' in os.environ:  # pragma: no cover
 
 # Set up FAS extension
 FAS = FAS(APP)
+
+
+# Set up the logger
+## Send emails for big exception
+mail_admin = APP.config.get('MAIL_ADMIN', None)
+if mail_admin and not APP.debug:
+    MAIL_HANDLER = logging.handlers.SMTPHandler(
+        APP.config.get('SMTP_SERVER', '127.0.0.1'),
+        'nobody@fedoraproject.org',
+        mail_admin,
+        'PkgDB2 error')
+    MAIL_HANDLER.setFormatter(logging.Formatter('''
+        Message type:       %(levelname)s
+        Location:           %(pathname)s:%(lineno)d
+        Module:             %(module)s
+        Function:           %(funcName)s
+        Time:               %(asctime)s
+
+        Message:
+
+        %(message)s
+    '''))
+    MAIL_HANDLER.setLevel(logging.ERROR)
+    APP.logger.addHandler(MAIL_HANDLER)
+
+
+# Log to stderr as well
+STDERR_LOG = logging.StreamHandler(sys.stderr)
+STDERR_LOG.setLevel(logging.INFO)
+APP.logger.addHandler(STDERR_LOG)
 
 SESSION = dbtools.create_session(APP.config['DB_URL'])
 
@@ -54,8 +85,8 @@ def parseresults(log):
             failedtests = line.replace("Failed Tests: ", "", 1).rstrip('\n')
         elif "========" in line:
             break
-        else:
-            print "No match found for: %s" % (line)
+        #else:
+            #APP.logger.info("No match found for: %s", line)
     return testdate, testset, testkver, testrel, testresult, failedtests
 
 
@@ -70,6 +101,7 @@ def upload_results(test_result, username, authenticated=False):
         (testdate, testset, testkver, testrel,
          testresult, failedtests) = parseresults(test_result)
     except Exception as err:
+        APP.logger.debug(err)
         raise InvalidInputException('Could not parse these results')
 
     relarch = testkver.split(".")
@@ -189,6 +221,17 @@ def logs(logid):
     return flask.send_from_directory(logdir, '%s.log' % logid)
 
 
+@APP.route('/stats')
+def stats():
+    ''' Display some stats about the data gathered. '''
+    stats = dbtools.get_stats(SESSION)
+
+    return flask.render_template(
+        'stats.html',
+        stats=stats,
+    )
+
+
 @APP.route('/upload/', methods=['GET', 'POST'])
 @fas_login_required
 def upload():
@@ -210,13 +253,16 @@ def upload():
             SESSION.commit()
             flask.flash('Upload successful!')
         except InvalidInputException as err:
-            flask.flash(err)
+            APP.logger.debug(err)
+            flask.flash(err.message)
             return flask.redirect(flask.url_for('upload'))
         except SQLAlchemyError as err:
+            APP.logger.exception(err)
             flask.flash('Could not save the data in the database')
             SESSION.rollback()
             return flask.redirect(flask.url_for('upload'))
         except OSError as err:
+            APP.logger.exception(err)
             SESSION.delete(tests)
             SESSION.commit()
             flask.flash('Could not save the result file')
@@ -251,12 +297,15 @@ def upload_autotest():
             SESSION.commit()
             output = {'message': 'Upload successful!'}
         except InvalidInputException as err:
+            APP.logger.debug(err)
             output = {'error': 'Invalid input file'}
             httpcode = 400
         except SQLAlchemyError as err:
+            APP.logger.exception(err)
             output = {'error': 'Could not save data in the database'}
             httpcode = 500
         except OSError as err:
+            APP.logger.exception(err)
             SESSION.delete(tests)
             SESSION.commit()
             output = {'error': 'Could not save the result file'}
@@ -298,12 +347,15 @@ def upload_anonymous():
             SESSION.commit()
             output = {'message': 'Upload successful!'}
         except InvalidInputException as err:
+            APP.logger.debug(err)
             output = {'error': 'Invalid input file'}
             httpcode = 400
         except SQLAlchemyError as err:
+            APP.logger.exception(err)
             output = {'error': 'Could not save data in the database'}
             httpcode = 500
         except OSError as err:
+            APP.logger.exception(err)
             SESSION.delete(tests)
             SESSION.commit()
             output = {'error': 'Could not save the result file'}

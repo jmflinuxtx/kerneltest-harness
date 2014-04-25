@@ -7,6 +7,7 @@ tests performed on kernels.
 Requirements (as Fedora RPM):
 - python-flask
 - python-flask-wtf
+- python-fedora-flask
 - python-wtforms
 - python-sqlalchemy
 
@@ -20,5 +21,3 @@ To run a development instance:
  $ python app.py
 
 The application should be accessible at http//127.0.0.1:5000.
-You might want to add your username to the list of ADMINS in default_config.py
-to get access to the admin interface.

@@ -1,0 +1,65 @@
+{% extends "master.html" %}
+
+{% block content %}
+
+<a href='http://fedoraproject.org/wiki/KernelTestingInitiative'>
+  <h1>Stats about the Fedora Kernel Test Results</h1>
+</a>
+
+<h2>Generic stats</h2>
+<table border='1' style='width:300px'>
+  <tr>
+    <th>Number of tests</th>
+    <td>{{ stats['n_test'] }}</td>
+  </tr>
+  <tr>
+    <th>Number of kernels tested</th>
+    <td>{{ stats['kernels'] | length }}</td>
+  </tr>
+  <tr>
+    <th>Number of arches tested</th>
+    <td>{{ stats['arches'] | length }}</td>
+  </tr>
+</table>
+
+<h2>Stats per release</h2>
+<table border='1' style='width:300px'>
+  <tr>
+    <th>Release</th>
+    <th>Number of kernels</th>
+    <th>Number of tests</th>
+    <th>Number of arches</th>
+    <th>Number of testers</th>
+  </tr>
+  {% for release in stats['rel_stats'] | sort(reverse=True) %}
+  <tr>
+    <td>{{ release }}</td>
+    <td>{{ stats['rel_stats'][release]['kernels'] | length }}</td>
+    <td>{{ stats['rel_stats'][release]['tests'] | length }}</td>
+    <td>{{ stats['rel_stats'][release]['arches'] | length }}</td>
+    <td>{{ stats['rel_stats'][release]['testers'] | length }}</td>
+  </tr>
+  {% endfor %}
+</table>
+
+<h2>Stats per kernel</h2>
+<table border='1' style='width:300px'>
+  <tr>
+    <th>Kernel</th>
+    <th>Number of releases</th>
+    <th>Number of tests</th>
+    <th>Number of arches</th>
+    <th>Number of testers</th>
+  </tr>
+  {% for kernel in stats['ker_stats'] | sort(reverse=True) %}
+  <tr>
+    <td>{{ kernel }}</td>
+    <td>{{ stats['ker_stats'][kernel]['releases'] | length }}</td>
+    <td>{{ stats['ker_stats'][kernel]['tests'] | length }}</td>
+    <td>{{ stats['ker_stats'][kernel]['arches'] | length }}</td>
+    <td>{{ stats['ker_stats'][kernel]['testers'] | length }}</td>
+  </tr>
+  {% endfor %}
+</table>
+
+{% endblock %}

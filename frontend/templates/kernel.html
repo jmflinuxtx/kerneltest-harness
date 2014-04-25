@@ -3,7 +3,7 @@
 {% block content %}
 <h1>Results for kernel {{ kernel.kver }}</h1>
 
-<table border='1' style='width:400px'>
+<table border='1' style='width:550px'>
 <tr>
     <th>Kernel</th>
     <th>Result</th>
@@ -12,7 +12,14 @@
 {% for test in tests %}
     <tr>
         <td>{{ test.kver }}</td>
-        <td>{{ test.testresult }}</td>
+        <td>
+            {% if test.testresult == 'PASS' %}
+            <img src="{{ url_for('static', filename='Approved.png') }}" />
+            {% else %}
+            <img src="{{ url_for('static', filename='Denied.png') }}" />
+            {% endif %}
+            {{ test.testresult }}
+        </td>
         <td><a href='{{ url_for("logs", logid=test.testid) }}'>
                 logs </a>
     </tr>

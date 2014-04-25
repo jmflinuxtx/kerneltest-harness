@@ -20,7 +20,9 @@
           {% for release in releases %}
           <li>
             {% if release == rawhide %}
-              <a href='rawhide.html'>Fedora Rawhide</a>
+                <a href='{{ url_for("release", release=release.releasenum) }}'>
+                    Fedora Rawhide
+                </a>
             {% else %}
               <a href='{{ url_for("release", release=release.releasenum) }}'>
                   Fedora {{ release.releasenum }}
@@ -29,6 +31,7 @@
           </li>
           {% endfor %}
         </ul>
+        <a href='{{ url_for("stats") }}'>Stats</a>
         <h2>Authentication</h2>
         {% if not g.fas_user %}
         <a href='{{ url_for("login") }}'>Login</a>
