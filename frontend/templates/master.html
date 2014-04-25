@@ -31,6 +31,7 @@
           </li>
           {% endfor %}
         </ul>
+        <a href='{{ url_for("stats") }}'>Stats</a>
         <h2>Authentication</h2>
         {% if not g.fas_user %}
         <a href='{{ url_for("login") }}'>Login</a>
