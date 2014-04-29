@@ -107,6 +107,10 @@ def upload_results(test_result, username, authenticated=False):
     relarch = testkver.split(".")
     fver = relarch[-2].replace("fc", "", 1)
     testarch = relarch[-1]
+    # Work around for F19 and older kver conventions
+    if testarch == "PAE":
+        testarch = "i686+PAE"
+        fver = relarch[-3].replace("fc", "", 1)
 
     test = dbtools.KernelTest(
         tester=username,
