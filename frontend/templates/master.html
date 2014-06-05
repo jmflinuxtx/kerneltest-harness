@@ -60,6 +60,18 @@
 
         </div>
 
+        {% if options is defined %}
+        <div id="options">
+            <div id="options_title">
+                <h3>{% block options_title %}Options{% endblock %}</h3>
+            </div>
+            <div id="delimiter"></div>
+            <div id="options_content">
+                {% block options %}{% endblock %}
+            </div>
+        </div>
+        {% endif %}
+
         <p id="footer">
           Copyright &copy; 2012-2014 Red Hat
           -- {{version}}
