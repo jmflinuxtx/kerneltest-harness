@@ -1,0 +1,47 @@
+{% macro render_field_in_row(field, after="", escape_after=False) %}
+<tr>
+    <td>{{ field.label }}</td>
+    <td>{{ field(**kwargs)|safe }}</td>
+
+    {% if escape_after %}
+    {% autoescape off%} {% if after %} <td>{{ after }}</td>{% endif %} {% endautoescape %}
+    {% else %}
+    {% if after %} <td>{{ after }}</td>{% endif %}
+    {% endif %}
+
+    {% if field.errors %}
+    <td>{% for error in field.errors %}{{ error }}<br />{% endfor %}</td>
+    {% endif %}
+</tr>
+{% endmacro %}
+
+{% extends "master.html" %}
+
+{% block title %}{% if release %} Release: {{ release.releasenum }} {%
+    else %} New release {% endif %}
+{% endblock %}
+
+{% block content %}
+    <h1>{% if release %} Release: {{ release.releasenum }} {%
+    else %} New release {% endif %}</h1>
+
+{% if release %}
+<form action="{{ url_for('admin_edit_release', relnum=release.releasenum) }}" method="POST">
+{% else %}
+<form action="{{ url_for('admin_new_release') }}" method="POST">
+{% endif %}
+  <table border='1' style='width:400px'>
+      {{ render_field_in_row(form.releasenum) }}
+      {{ render_field_in_row(form.support) }}
+  </table>
+
+  <p class="buttons indent">
+      <input type="submit" class="submit positive button" value="{{ submit_text }}">
+      <a href="{{ url_for('index') }}">
+        <input type="button" value="Cancel" class="button">
+      </a>
+      {{ form.csrf_token }}
+    </p>
+</form>
+
+{% endblock %}
