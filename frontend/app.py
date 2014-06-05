@@ -461,7 +461,7 @@ def logout():
 ## Admin section
 
 @APP.route('/admin/new', methods=('GET', 'POST'))
-#@admin_required
+@admin_required
 def admin_new_release():
     form = ReleaseForm()
     if form.validate_on_submit():
@@ -480,7 +480,7 @@ def admin_new_release():
 
 
 @APP.route('/admin/<relnum>/edit', methods=('GET', 'POST'))
-#@admin_required
+@admin_required
 def admin_edit_release(relnum):
     release = dbtools.get_release(SESSION, relnum)
     if not release:
