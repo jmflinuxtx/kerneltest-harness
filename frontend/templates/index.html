@@ -2,10 +2,31 @@
 
 {% block title %}Home{% endblock %}
 
+{% set options = True %}
+{% block options_title %}Current releases{% endblock %}
+{%block options %}
+<ul>
+  {% for release in releases %}
+  <li>
+    {% if release == rawhide %}
+        <a href='{{ url_for("release", release=release.releasenum) }}'>
+            Fedora Rawhide
+        </a>
+    {% else %}
+      <a href='{{ url_for("release", release=release.releasenum) }}'>
+          Fedora {{ release.releasenum }}
+      </a>
+    {% endif %}
+  </li>
+  {% endfor %}
+</ul>
+{% endblock %}
+
 {% block content %}
 <a href='http://fedoraproject.org/wiki/KernelTestingInitiative'>
     <h1>Fedora Kernel Test Results</h1>
 </a>
+
 <table border='1' style='width:550px'>
 <tr>
     <th>Kernel</th>
