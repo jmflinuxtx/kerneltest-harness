@@ -195,12 +195,16 @@ def inject_variables():
     '''
     releases = dbtools.getcurrentreleases(SESSION)
     rawhide = dbtools.getrawhide(SESSION)
+    admin = False
+    if is_authenticated():
+        admin = is_admin(flask.g.fas_user)
 
     return dict(
         date=datetime.datetime.utcnow().strftime("%a %b %d %Y %H:%M"),
         releases=releases,
         rawhide=rawhide,
         version=__version__,
+        is_admin=admin,
     )
 
 
