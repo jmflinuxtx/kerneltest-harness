@@ -10,6 +10,9 @@ Requirements (as Fedora RPM):
 - python-fedora-flask
 - python-wtforms
 - python-sqlalchemy
+- python-openid
+- python-openid-teams
+- python-openid-cla
 
 
 To run a development instance:
