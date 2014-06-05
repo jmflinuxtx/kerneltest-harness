@@ -476,6 +476,22 @@ class ApiUploadForm(flask_wtf.Form):
         "Result file", validators=[flask_wtf.file_required()])
 
 
+class ReleaseForm(flask_wtf.Form):
+    ''' Form used to create or edit release in the database. '''
+    releasenum = wtf.IntegerField(
+        "Release number <span class='error'>*</span>",
+        validators=[wtf.validators.Required()])
+    support = wtf.SelectField(
+        "Support <span class='error'>*</span>",
+        validators=[wtf.validators.Required()],
+        choices=[
+            ('RAWHIDE', 'Rawhide'),
+            ('TEST', 'Test'),
+            ('RELEASE', 'Release'),
+            ('RETIRED', 'Retired'),
+        ]
+    )
+
 if __name__ == '__main__':
     APP.debug = True
     APP.run()
