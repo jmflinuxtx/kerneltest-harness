@@ -6,6 +6,15 @@
 {% block options_title %}Current releases{% endblock %}
 {%block options %}
 <ul>
+  {% if is_admin %}
+  <li>
+    <a href='{{ url_for("admin_new_release") }}'>
+        New release
+    </a>
+  </li>
+  </ul>
+  <ul>
+  {% endif %}
   {% for release in releases %}
   <li>
     {% if release == rawhide %}
@@ -16,6 +25,10 @@
       <a href='{{ url_for("release", release=release.releasenum) }}'>
           Fedora {{ release.releasenum }}
       </a>
+    {% endif %}
+    {% if is_admin %}
+    (<a href='{{ url_for("admin_edit_release", relnum=release.releasenum) }}'
+        >edit</a>)
     {% endif %}
   </li>
   {% endfor %}
