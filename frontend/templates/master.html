@@ -1,63 +1,72 @@
-<html>
-
+<!DOCTYPE html>
+<html lang='en'>
 <head>
-  <title>Kernel Test Results </title>
-  <link rel='stylesheet' type='text/css'
-      href='http://fedoraproject.org/static/css/fedora.css' />
-</head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <title>{% block title %}{% endblock %} - Kernel-test harness</title>
+    <link rel="shortcut icon" type="image/vnd.microsoft.icon"
+        href="{{ url_for('static', filename='favicon.ico')}}"/>
+    <link rel="stylesheet" type="text/css" media="screen"
+        href="{{ url_for('static', filename='koji.css') }}"/>
+    <link rel="stylesheet" type="text/css" media="screen"
+        href="{{ url_for('static', filename='kerneltest.css') }}"/>
+    {% block header %}{% endblock %}
+  </head>
+  <body id="{% block tag %}{% endblock %}">
 
-<body>
-<div id="wrapper">
-  <div id='head h1 a'>
-    <img src='http://fedoraproject.org/w/uploads/3/3c/Fedora_logo.png'>
-  </div>
+    <div id="wrap">
+      <div id="innerwrap">
 
-  <div id="wrapper2">
-    <div id='sidebar'>
-      <div id='nav'>
-        <a href='{{ url_for("index") }}'>Home</a>
-        <ul>
-          {% for release in releases %}
-          <li>
-            {% if release == rawhide %}
-                <a href='{{ url_for("release", release=release.releasenum) }}'>
-                    Fedora Rawhide
-                </a>
-            {% else %}
-              <a href='{{ url_for("release", release=release.releasenum) }}'>
-                  Fedora {{ release.releasenum }}
-              </a>
+        <!-- HEADER -->
+        <div id="header">
+          <img src="{{ url_for('static', filename='kerneltest-logo.png') }}"
+            alt="Kerneltest Logo" id="kojiLogo"/>
+        </div><!-- end header -->
+
+        <!-- MAIN NAVIGATION -->
+        <div id="mainNav">
+          <h4 class="hide">Main Site Links:</h4>
+          <ul>
+            <li id="homeTab"><a href="{{url_for('index')}}">Home</a></li>
+            <li id="locationsTab"><a href="{{url_for('stats')}}">Stats</a></li>
+            {% if g.fas_user %}
+            <li id="mymeetingTab"><a href="{{url_for('upload')}}">Upload</a></li>
             {% endif %}
-          </li>
-          {% endfor %}
-        </ul>
-        <a href='{{ url_for("stats") }}'>Stats</a>
-        <h2>Authentication</h2>
-        {% if not g.fas_user %}
-        <a href='{{ url_for("login") }}'>Login</a>
-        {% else %}
-        <a href='{{ url_for("upload") }}'>Upload your results</a>
-        <a href='{{ url_for("logout") }}'>Logout</a>
-        {% endif %}
+          </ul>
+        </div><!-- end mainNav -->
+
+        <span id="loginInfo">
+          {% if g.fas_user %}
+            <span class="text">logged in as </span>
+            {{ g.fas_user.username }} |
+            <a href="{{ url_for('logout') }}?next={{request.url}}">log out</a>
+          {% else %}
+            <a href="{{ url_for('login') }}?next={{request.url}}">login</a>
+          {% endif %}
+        </span>
+
+        <div id="content">
+
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if category, messages %}
+                <ul id="flashes">
+                    {% for category, message in messages %}
+                    <li class="{{ category }}">{{ message }}</li>
+                    {% endfor %}
+                </ul>
+                {% endif %}
+            {% endwith %}
+
+            {% block content %}{% endblock %}
+
+        </div>
+
+        <p id="footer">
+          Copyright &copy; 2012-2014 Red Hat
+          -- {{version}}
+        </p>
 
       </div>
     </div>
 
-    <div id='content'>
-      {% with messages = get_flashed_messages(with_categories=true) %}
-          {% if category, messages %}
-          <ul id="flashes">
-              {% for category, message in messages %}
-              <li class="{{ category }}">{{ message }}</li>
-              {% endfor %}
-          </ul>
-          {% endif %}
-      {% endwith %}
-      {% block content %}{% endblock %}
-    </div>
-  </div>
-</div>
-
 </body>
-
 </html>
