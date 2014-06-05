@@ -458,6 +458,26 @@ def logout():
     return flask.redirect(next_url)
 
 
+## Admin section
+
+@APP.route('/admin/new', methods=('GET', 'POST'))
+#@admin_required
+def admin_new_release():
+    form = ReleaseForm()
+    if form.validate_on_submit():
+
+        release = dbtools.Release()
+        SESSION.add(release)
+        form.populate_obj(obj=release)
+        SESSION.commit()
+        flask.flash('Release "%s" added' % release.releasenum)
+
+        return flask.redirect(flask.url_for('index'))
+    return flask.render_template(
+        'release_new.html',
+        form=form,
+        submit_text='Create release')
+
 ## Form used to upload new results
 
 class UploadForm(flask_wtf.Form):
