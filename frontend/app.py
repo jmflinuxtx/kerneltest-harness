@@ -138,6 +138,27 @@ def upload_results(test_result, username, authenticated=False):
 
 ## Flask specific utility function
 
+def is_authenticated():
+    """ Returns whether the user is currently authenticated or not. """
+    return hasattr(flask.g, 'fas_user') and flask.g.fas_user is not None
+
+
+def is_admin(user):
+    """ Is the user an admin. """
+    if not user:
+        return False
+
+    if not user.cla_done:
+        return False
+
+    admins = APP.config['ADMIN_GROUP']
+    if isinstance(admins, basestring):
+        admins = [admins]
+    admins = set(admins)
+
+    return len(admins.intersection(set(user.groups))) > 0
+
+
 def fas_login_required(function):
     ''' Flask decorator to ensure that the user is logged in against FAS.
     '''
