@@ -58,6 +58,16 @@ def create_session(
     return scopedsession
 
 
+def get_release(session, releasenum):
+    ''' Return the Release object for a specified release number. '''
+    query = session.query(
+        Release
+    ).filter(
+        Release.releasenum == releasenum
+    )
+    return query.first()
+
+
 def getcurrentreleases(session):
     ''' Return the Release information for all active releases. '''
     query = session.query(
