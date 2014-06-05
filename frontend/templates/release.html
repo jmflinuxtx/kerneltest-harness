@@ -1,5 +1,7 @@
 {% extends "master.html" %}
 
+{% block title %}Release: {{ release }}{% endblock %}
+
 {% block content %}
 {% if release == rawhide %}
     <h1>Kernels Tested for Fedora Rawhide</h1>
