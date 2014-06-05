@@ -432,7 +432,11 @@ def login():
     if hasattr(flask.g, 'fas_user') and flask.g.fas_user is not None:
         return flask.redirect(next_url)
     else:
-        return FAS.login(return_url=next_url, groups=[])
+        admins = APP.config['ADMIN_GROUP']
+        if isinstance(admins, basestring):
+            admins = [admins]
+        return FAS.login(
+            return_url=next_url, groups=admins)
 
 
 @APP.route('/logout')
