@@ -18,4 +18,4 @@ MAIL_ADMIN = None
 
 # FAS group or groups (provided as a list) in which should be the admins
 # of this application
-ADMIN_GROUP = 'sysadmin-main'
+ADMIN_GROUP = ['sysadmin-kernel', 'sysadmin-main']
