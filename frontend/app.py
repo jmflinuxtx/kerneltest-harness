@@ -478,6 +478,29 @@ def admin_new_release():
         form=form,
         submit_text='Create release')
 
+
+@APP.route('/admin/<relnum>/edit', methods=('GET', 'POST'))
+#@admin_required
+def admin_edit_release(relnum):
+    release = dbtools.get_release(SESSION, relnum)
+    if not release:
+        flask.flash('No release %s found' % relnum)
+        return flask.redirect(flask.url_for('index'))
+
+    form = ReleaseForm(obj=release)
+    if form.validate_on_submit():
+        form.populate_obj(obj=release)
+        SESSION.commit()
+        flask.flash('Release "%s" updated' % release.releasenum)
+
+        return flask.redirect(flask.url_for('index'))
+    return flask.render_template(
+        'release_new.html',
+        form=form,
+        release=release,
+        submit_text='Edit release')
+
+
 ## Form used to upload new results
 
 class UploadForm(flask_wtf.Form):
