@@ -16,6 +16,7 @@ from sqlalchemy.exc import SQLAlchemyError
 
 import dbtools
 
+__version__ = '1.0'
 
 APP = flask.Flask(__name__)
 APP.config.from_object('default_config')
@@ -162,6 +163,7 @@ def inject_variables():
         date=datetime.datetime.utcnow().strftime("%a %b %d %Y %H:%M"),
         releases=releases,
         rawhide=rawhide,
+        version=__version__,
     )
 
 
