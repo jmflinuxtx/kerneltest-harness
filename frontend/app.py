@@ -34,7 +34,7 @@ if mail_admin and not APP.debug:
         APP.config.get('SMTP_SERVER', '127.0.0.1'),
         'nobody@fedoraproject.org',
         mail_admin,
-        'PkgDB2 error')
+        'Kerneltest-harness error')
     MAIL_HANDLER.setFormatter(logging.Formatter('''
         Message type:       %(levelname)s
         Location:           %(pathname)s:%(lineno)d
