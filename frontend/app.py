@@ -133,6 +133,14 @@ def upload_results(test_result, username, authenticated=False):
     SESSION.add(test)
     SESSION.flush()
 
+    if authenticated:
+        dbtools.fedmsg_publish(
+            'upload.new',
+            dict(
+                agent=flask.g.fas_user.username,
+                test=test.to_json(),
+            ))
+
     filename = '%s.log' % test.testid
     test_result.seek(0)
     test_result.save(os.path.join(logdir, filename))
@@ -497,8 +505,15 @@ def admin_new_release():
         SESSION.add(release)
         form.populate_obj(obj=release)
         SESSION.commit()
-        flask.flash('Release "%s" added' % release.releasenum)
 
+        dbtools.fedmsg_publish(
+            'release.new',
+            dict(
+                agent=flask.g.fas_user.username,
+                release=release.to_json(),
+            ))
+
+        flask.flash('Release "%s" added' % release.releasenum)
         return flask.redirect(flask.url_for('index'))
     return flask.render_template(
         'release_new.html',
@@ -518,8 +533,15 @@ def admin_edit_release(relnum):
     if form.validate_on_submit():
         form.populate_obj(obj=release)
         SESSION.commit()
-        flask.flash('Release "%s" updated' % release.releasenum)
 
+        dbtools.fedmsg_publish(
+            'release.edit',
+            dict(
+                agent=flask.g.fas_user.username,
+                release=release.to_json(),
+            ))
+
+        flask.flash('Release "%s" updated' % release.releasenum)
         return flask.redirect(flask.url_for('index'))
     return flask.render_template(
         'release_new.html',
