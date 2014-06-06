@@ -51,6 +51,15 @@ class Release(BASE):
     support = sa.Column(
         sa.Enum('RAWHIDE', 'TEST', 'RELEASE', 'RETIRED', name='support'))
 
+    def to_json(self):
+        """ Return a dictionnary representation of this object.
+
+        """
+        return dict(
+            releasenum=self.releasenum,
+            support=self.support,
+        )
+
 
 def create_session(
         db_url, debug=False, pool_recycle=3600, create_table=False):
