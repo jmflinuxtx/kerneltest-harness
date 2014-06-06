@@ -189,6 +189,16 @@ def admin_required(function):
     return decorated_function
 
 
+def allowed_file(input_file):
+    ''' Validate the uploaded file.
+    Checks if its extension and mimetype are within the lists of
+    mimetypes and extensions allowed.
+    '''
+    # Mimetype allowed for file to upload
+    allowed_types = APP.config.get('ALLOWED_MIMETYPES', [])
+    return input_file.mimetype in allowed_types
+
+
 @APP.context_processor
 def inject_variables():
     ''' Inject some variables in every templates.
