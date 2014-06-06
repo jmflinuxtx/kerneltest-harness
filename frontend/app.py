@@ -6,6 +6,7 @@ import datetime
 import logging
 import os
 import sys
+import urlparse
 from functools import wraps
 
 import flask
