@@ -162,6 +162,17 @@ def is_admin(user):
     return len(admins.intersection(set(user.groups))) > 0
 
 
+def is_safe_url(target):
+    """ Checks that the target url is safe and sending to the current
+    website not some other malicious one.
+    """
+    ref_url = urlparse.urlparse(flask.request.host_url)
+    test_url = urlparse.urlparse(
+        urlparse.urljoin(flask.request.host_url, target))
+    return test_url.scheme in ('http', 'https') and \
+        ref_url.netloc == test_url.netloc
+
+
 def fas_login_required(function):
     ''' Flask decorator to ensure that the user is logged in against FAS.
     '''
@@ -435,23 +446,23 @@ def upload_anonymous():
 def login():
     ''' Login mechanism for this application.
     '''
-    next_url = flask.url_for('index')
+    return_point = flask.url_for('index')
     if 'next' in flask.request.args:
-        next_url = flask.request.args['next']
-    elif 'next' in flask.request.form:
-        next_url = flask.request.form['next']
+        if is_safe_url(flask.request.args['next']):
+            return_point = flask.request.args['next']
 
-    if next_url == flask.url_for('login'):
+    # Avoid infinite loop
+    if return_point == flask.url_for('login'):
         next_url = flask.url_for('index')
 
     if hasattr(flask.g, 'fas_user') and flask.g.fas_user is not None:
-        return flask.redirect(next_url)
+        return flask.redirect(return_point)
     else:
         admins = APP.config['ADMIN_GROUP']
         if isinstance(admins, basestring):
             admins = [admins]
         return FAS.login(
-            return_url=next_url, groups=admins)
+            return_url=return_point, groups=admins)
 
 
 @APP.route('/logout')
