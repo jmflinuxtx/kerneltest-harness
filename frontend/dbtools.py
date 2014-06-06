@@ -27,6 +27,23 @@ class KernelTest(BASE):
     failedtests = sa.Column(sa.Text(), nullable=True)
     authenticated = sa.Column(sa.Boolean, nullable=False, default=False)
 
+    def to_json(self):
+        """ Return a dictionnary representation of this object.
+
+        """
+        return dict(
+            tester=self.tester,
+            testdate=self.testdate,
+            testset=self.testset,
+            kernel_version=self.kver,
+            fedora_version=self.fver,
+            arch=self.testarch,
+            release=self.testrel,
+            result=self.testresult,
+            failed_tests=self.failedtests,
+            authenticated=self.authenticated,
+        )
+
 
 class Release(BASE):
     __tablename__ = 'releases'
