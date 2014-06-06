@@ -3,6 +3,7 @@
 # Licensed under the terms of the GNU GPL License version 2
 
 import datetime
+import warnings
 
 import sqlalchemy as sa
 from sqlalchemy.ext.declarative import declarative_base
@@ -10,6 +11,20 @@ from sqlalchemy.orm import sessionmaker
 from sqlalchemy.orm import scoped_session
 
 BASE = declarative_base()
+
+
+def fedmsg_publish(*args, **kwargs):  # pragma: no cover
+    ''' Try to publish a message on the fedmsg bus. '''
+    ## We catch Exception if we want :-p
+    # pylint: disable=W0703
+    ## Ignore message about fedmsg import
+    # pylint: disable=F0401
+    kwargs['modname'] = 'kerneltest'
+    try:
+        import fedmsg
+        fedmsg.publish(*args, **kwargs)
+    except Exception, err:
+        warnings.warn(str(err))
 
 
 class KernelTest(BASE):
