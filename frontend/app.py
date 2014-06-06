@@ -199,6 +199,8 @@ def allowed_file(input_file):
     '''
     # Mimetype allowed for file to upload
     allowed_types = APP.config.get('ALLOWED_MIMETYPES', [])
+    APP.logger.info(
+        'input submitted with mimetype: %s' % input_file.mimetype)
     return input_file.mimetype in allowed_types
 
 
