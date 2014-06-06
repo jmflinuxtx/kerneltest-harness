@@ -19,3 +19,6 @@ MAIL_ADMIN = None
 # FAS group or groups (provided as a list) in which should be the admins
 # of this application
 ADMIN_GROUP = ['sysadmin-kernel', 'sysadmin-main']
+
+# List of MIME types allowed for upload in the application
+ALLOWED_MIMETYPES = ['text/plain']
