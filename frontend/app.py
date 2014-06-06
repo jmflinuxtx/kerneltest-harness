@@ -94,6 +94,9 @@ def parseresults(log):
 def upload_results(test_result, username, authenticated=False):
     ''' Actually try to upload the results into the database.
     '''
+    if not allowed_file(test_result):
+        raise InvalidInputException('Invalid input submitted')
+
     logdir = APP.config.get('LOG_DIR', 'logs')
     if not os.path.exists(logdir) and not os.path.isdir(logdir):
         os.mkdir(logdir)
