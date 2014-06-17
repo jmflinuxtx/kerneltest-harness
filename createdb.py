@@ -4,6 +4,7 @@
 __requires__ = ['SQLAlchemy >= 0.7', 'jinja2 >= 2.4']
 import pkg_resources
 
+from sqlalchemy.exc import SQLAlchemyError
 import kerneltest.dbtools as dbtools
 import kerneltest.app as app
 
@@ -22,20 +23,20 @@ release = dbtools.Release(
     support = "RELEASE",
 )
 SESSION.add(release)
-SESSION.flush()
 
 release = dbtools.Release(
     releasenum = "20",
     support = "RELEASE",
 )
 SESSION.add(release)
-SESSION.flush()
 
 release = dbtools.Release(
     releasenum = "21",
     support = "RAWHIDE",
 )
 SESSION.add(release)
-SESSION.flush()
-SESSION.commit()
 
+try:
+    SESSION.commit()
+except SQLAlchemyError, err:
+    print err
