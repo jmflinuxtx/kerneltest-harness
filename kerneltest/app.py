@@ -20,7 +20,7 @@ import dbtools
 __version__ = '1.0'
 
 APP = flask.Flask(__name__)
-APP.config.from_object('default_config')
+APP.config.from_object('kerneltest.default_config')
 if 'KERNELTEST_CONFIG' in os.environ:  # pragma: no cover
     APP.config.from_envvar('KERNELTEST_CONFIG')
 
