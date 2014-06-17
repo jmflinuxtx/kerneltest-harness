@@ -13,8 +13,8 @@ from kerneltest.app import __version__
 
 
 setup(
-    name='kerneltests',
-    description='kerneltests is a web application meant to collect results '
+    name='kerneltest',
+    description='kerneltest is a web application meant to collect results '
                 'from kernel tests.',
     version=__version__,
     author='Justin M. Forbes & Pierre-Yves Chibon',
