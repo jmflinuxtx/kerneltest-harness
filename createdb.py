@@ -4,8 +4,8 @@
 __requires__ = ['SQLAlchemy >= 0.7', 'jinja2 >= 2.4']
 import pkg_resources
 
-import dbtools
-import app
+import kerneltest.dbtools as dbtools
+import kerneltest.app as app
 
 dbtools.create_session(
     app.APP.config['DB_URL'],
