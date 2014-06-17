@@ -1,0 +1,5 @@
+include LICENSE README.rmd 
+include harness.py
+recursive-include kerneltest *
+recursive-include guests *
+
