@@ -11,7 +11,7 @@
 ## Set the environment variable pointing to the configuration file
 #os.environ['PKGDB2_CONFIG'] = '/etc/kerneltest/kerneltest.cfg'
 
-## The following is only needed if you did not install pkgdb
+## The following is only needed if you did not install kerneltest
 ## as a python module (for example if you run it from a git clone).
 #import sys
 #sys.path.insert(0, '/path/to/kerneltest/')
