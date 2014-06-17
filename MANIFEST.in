@@ -1,5 +1,6 @@
-include LICENSE README.rmd 
-include harness.py
+include LICENSE README.md
+include harness.py createdb.py
 recursive-include kerneltest *
 recursive-include guests *
+recursive-include files *
 
