@@ -13,6 +13,7 @@ import flask
 import wtforms as wtf
 from flask.ext.fas_openid import FAS
 from flask.ext import wtf as flask_wtf
+from flask.ext.wtf import file as wtf_file
 from sqlalchemy.exc import SQLAlchemyError
 
 import dbtools
@@ -555,8 +556,8 @@ def admin_edit_release(relnum):
 class UploadForm(flask_wtf.Form):
     ''' Form used to upload the results of kernel tests. '''
     username = wtf.TextField("Username", default='anon')
-    test_result = flask_wtf.FileField(
-        "Result file", validators=[flask_wtf.file_required()])
+    test_result = wtf_file.FileField(
+        "Result file", validators=[wtf_file.file_required()])
 
 
 class ApiUploadForm(flask_wtf.Form):
@@ -564,8 +565,8 @@ class ApiUploadForm(flask_wtf.Form):
     username = wtf.TextField("Username", default='anon')
     api_token = wtf.TextField(
         "API token", validators=[wtf.validators.Required()])
-    test_result = flask_wtf.FileField(
-        "Result file", validators=[flask_wtf.file_required()])
+    test_result = wtf_file.FileField(
+        "Result file", validators=[wtf_file.file_required()])
 
 
 class ReleaseForm(flask_wtf.Form):
