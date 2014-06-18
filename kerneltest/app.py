@@ -117,7 +117,7 @@ def upload_results(test_result, username, authenticated=False):
         fver = relarch[-3].replace("fc", "", 1)
 
     username = username
-    if hasattr(flask.g, fas_user) and flask.g.fas_user:
+    if hasattr(flask.g, 'fas_user') and flask.g.fas_user:
         username = flask.g.fas_user.username
 
     test = dbtools.KernelTest(
