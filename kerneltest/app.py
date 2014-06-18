@@ -263,7 +263,8 @@ def index():
         arches = dbtools.getarches(SESSION, release.releasenum)
         for arch in arches:
             results = dbtools.getlatest(SESSION, release.releasenum, arch[0])
-            test_matrix.append(results)
+            if results:
+                test_matrix.append(results)
 
     return flask.render_template(
         'index.html',
