@@ -95,8 +95,7 @@ def parseresults(log):
 def upload_results(test_result, username, authenticated=False):
     ''' Actually try to upload the results into the database.
     '''
-    if not allowed_file(test_result):
-        raise InvalidInputException('Invalid input submitted')
+    allowed_file(test_result)
 
     logdir = APP.config.get('LOG_DIR', 'logs')
     if not os.path.exists(logdir) and not os.path.isdir(logdir):
@@ -221,7 +220,9 @@ def allowed_file(input_file):
     allowed_types = APP.config.get('ALLOWED_MIMETYPES', [])
     APP.logger.info(
         'input submitted with mimetype: %s' % input_file.mimetype)
-    return input_file.mimetype in allowed_types
+    if not input_file.mimetype in allowed_types:
+        raise InvalidInputException(
+            'Invalid input submitted: %s' % input_file.mimetype)
 
 
 @APP.context_processor
