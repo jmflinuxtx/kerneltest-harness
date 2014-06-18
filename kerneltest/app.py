@@ -116,6 +116,10 @@ def upload_results(test_result, username, authenticated=False):
         testarch = "i686+PAE"
         fver = relarch[-3].replace("fc", "", 1)
 
+    username = username
+    if hasattr(flask.g, fas_user) and flask.g.fas_user:
+        username = flask.g.fas_user.username
+
     test = dbtools.KernelTest(
         tester=username,
         testdate=testdate,
@@ -136,7 +140,7 @@ def upload_results(test_result, username, authenticated=False):
         dbtools.fedmsg_publish(
             'upload.new',
             dict(
-                agent=flask.g.fas_user.username,
+                agent=username,
                 test=test.to_json(),
             ))
 
