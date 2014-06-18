@@ -216,7 +216,8 @@ def getresultsbyrelease(session, release):
 def getreleasebykernel(session, kernel=None):
     ''' Return the different releases for the kernel specified. '''
     query = session.query(
-        sa.func.distinct(KernelTest.fver)
+        sa.func.distinct(KernelTest.fver),
+        KernelTest.kver
     ).filter(
         KernelTest.kver == kernel
     ).order_by(
@@ -233,7 +234,7 @@ def get_stats(session):
     output = {}
 
     output['arches'] = [arch[0] for arch in getarches(session)]
-    output['kernels'] = [rel[0] for rel in getkernelsbyrelease(session)]
+    output['kernels'] = set([rel[0] for rel in getkernelsbyrelease(session)])
     output['n_test'] = session.query(KernelTest).count()
 
     # Tests per release
