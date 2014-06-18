@@ -17,7 +17,7 @@ from sqlalchemy.exc import SQLAlchemyError
 
 import dbtools
 
-__version__ = '1.0.2'
+__version__ = '1.0.3'
 
 APP = flask.Flask(__name__)
 APP.config.from_object('kerneltest.default_config')

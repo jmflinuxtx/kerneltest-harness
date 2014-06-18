@@ -2,7 +2,7 @@
 %distutils.sysconfig import get_python_lib; print (get_python_lib())")}
 
 Name:           kerneltest
-Version:        1.0
+Version:        1.0.3
 Release:        1%{?dist}
 Summary:        Fedora Kernel test database
 
@@ -83,5 +83,8 @@ install -m 644 createdb.py $RPM_BUILD_ROOT/%{_datadir}/kerneltest/kerneltest_cre
 
 
 %changelog
+* Wed Jun 18 2014 Pierre-Yves Chibon <pingou@pingoured.fr> - 1.0.3-1
+- Update to 1.0.3
+
 * Tue Jun 17 2014 Pierre-Yves Chibon <pingou@pingoured.fr> - 1.0-1
 - Initial packaging work for Fedora
