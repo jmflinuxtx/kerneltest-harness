@@ -490,7 +490,7 @@ def logout():
         if is_safe_url(flask.request.values['next']):
             next_url = flask.request.values['next']
 
-    if next_url == flask.url_for('login'):
+    if next_url == flask.url_for('logout'):
         next_url = flask.url_for('index')
     if hasattr(flask.g, 'fas_user') and flask.g.fas_user is not None:
         FAS.logout()
