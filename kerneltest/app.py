@@ -588,7 +588,3 @@ class ReleaseForm(flask_wtf.Form):
             ('RETIRED', 'Retired'),
         ]
     )
-
-if __name__ == '__main__':
-    APP.debug = True
-    APP.run()
