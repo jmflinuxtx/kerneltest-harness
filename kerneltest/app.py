@@ -207,7 +207,7 @@ def admin_required(function):
         '''
         if not is_authenticated():
             return flask.redirect(flask.url_for(
-                'auth_login', next=flask.request.url))
+                'login', next=flask.request.url))
         elif not is_admin(flask.g.fas_user):
             flask.flash('You are not an admin', 'error')
             return flask.redirect(flask.url_for('index'))
