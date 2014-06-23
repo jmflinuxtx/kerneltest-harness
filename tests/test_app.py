@@ -308,6 +308,20 @@ class KerneltestTests(Modeltests):
             exp = {"error": "Invalid input file"}
             self.assertEqual(data, exp)
 
+    def test_stats(self):
+        ''' Test the stats method. '''
+        self.test_upload_results_autotest()
+        self.test_upload_results_anonymous()
+        self.test_upload_results_loggedin()
+
+        output = self.app.get('/stats')
+        data = output.data.split('\n')
+        self.assertEqual(data[59], '    <th>Number of tests</th>')
+        self.assertEqual(data[60], '    <td>5</td>')
+        self.assertEqual(data[64], '    <td>1</td>')
+        self.assertEqual(data[68], '    <td>1</td>')
+        self.assertEqual(
+            output.data.count('<td>3.14.1-200.fc20.x86_64</td>'), 1)
 
 
 if __name__ == '__main__':
