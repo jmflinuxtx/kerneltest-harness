@@ -347,6 +347,22 @@ class KerneltestTests(Modeltests):
             "<a href='/kernel/3.14.1-200.fc20.x86_64'>" in output.data)
         self.assertTrue('<h1>Kernels Tested for Fedora </h1>' in output.data)
 
+    def test_kernel(self):
+        ''' Test the kernel method. '''
+        self.test_upload_results_autotest()
+        self.test_upload_results_anonymous()
+        self.test_upload_results_loggedin()
+        self.test_admin_new_release()
+
+        output = self.app.get('/kernel/3.14.1-200.fc20.x86_64')
+        self.assertEqual(
+            output.data.count('<img src="/static/Denied.png" />'), 5)
+        self.assertTrue("<a href='/logs/1'>" in output.data)
+        self.assertTrue("<a href='/logs/2'>" in output.data)
+        self.assertTrue("<a href='/logs/3'>" in output.data)
+        self.assertTrue("<a href='/logs/4'>" in output.data)
+        self.assertTrue("<a href='/logs/5'>" in output.data)
+
 
 if __name__ == '__main__':
     SUITE = unittest.TestLoader().loadTestsFromTestCase(KerneltestTests)
