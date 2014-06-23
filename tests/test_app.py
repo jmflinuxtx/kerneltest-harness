@@ -211,6 +211,104 @@ class KerneltestTests(Modeltests):
             exp = {"error": "Invalid input file"}
             self.assertEqual(data, exp)
 
+    def test_upload_results_autotest(self):
+        ''' Test the app.upload_results function for the autotest user. '''
+        folder = os.path.dirname(os.path.abspath(__file__))
+        filename = '3.log'
+        full_path = os.path.join(folder, filename)
+
+        user = None
+        with user_set(app.APP, user):
+            output = self.app.get('/upload/autotest')
+            self.assertEqual(output.status_code, 405)
+            self.assertTrue(
+                '<title>405 Method Not Allowed</title>' in output.data)
+
+            # Not logged in, /upload/ not allowed
+            stream = open(full_path)
+            data = {
+                'test_result': stream,
+                'username': 'pingou',
+            }
+            output = self.app.post('/upload/', data=data)
+            self.assertEqual(output.status_code, 302)
+            self.assertTrue('<title>Redirecting...</title>' in output.data)
+
+            # Missing the api_token field
+            stream = open(full_path)
+            data = {
+                'test_result': stream,
+                'username': 'pingou',
+            }
+            output = self.app.post('/upload/autotest', data=data)
+            self.assertEqual(output.status_code, 400)
+            data = json.loads(output.data)
+            exp = {
+                "error": "Invalid request",
+                "messages": {
+                    "api_token": [
+                        "This field is required."
+                    ]
+                }
+            }
+            self.assertEqual(data, exp)
+
+            # Invalid api_token
+            stream = open(full_path)
+            data = {
+                'test_result': stream,
+                'username': 'pingou',
+                'api_token': 'foobar',
+            }
+            output = self.app.post('/upload/autotest', data=data)
+            self.assertEqual(output.status_code, 401)
+            data = json.loads(output.data)
+            exp = {"error": "Invalid api_token provided"}
+            self.assertEqual(data, exp)
+
+            # Valid api_token
+            app.APP.config['API_KEY'] = 'api token for the tests'
+            stream = open(full_path)
+            data = {
+                'test_result': stream,
+                'username': 'pingou',
+                'api_token': 'api token for the tests',
+            }
+            output = self.app.post('/upload/autotest', data=data)
+            self.assertEqual(output.status_code, 200)
+            data = json.loads(output.data)
+            exp = {"message": "Upload successful!"}
+            self.assertEqual(data, exp)
+
+            # Second valid upload
+            full_path = os.path.join(folder, '4.log')
+            stream = open(full_path)
+            data = {
+                'test_result': stream,
+                'username': 'pingou',
+                'api_token': 'api token for the tests',
+            }
+            output = self.app.post('/upload/autotest', data=data)
+            self.assertEqual(output.status_code, 200)
+            data = json.loads(output.data)
+            exp = {"message": "Upload successful!"}
+            self.assertEqual(data, exp)
+
+            # Invalid file upload
+            full_path = os.path.join(folder, 'invalid.log')
+            stream = open(full_path)
+            data = {
+                'test_result': stream,
+                'username': 'pingou',
+                'api_token': 'api token for the tests',
+            }
+            output = self.app.post('/upload/autotest', data=data)
+            self.assertEqual(output.status_code, 400)
+            data = json.loads(output.data)
+            exp = {"error": "Invalid input file"}
+            self.assertEqual(data, exp)
+
+
 
 if __name__ == '__main__':
     SUITE = unittest.TestLoader().loadTestsFromTestCase(KerneltestTests)
