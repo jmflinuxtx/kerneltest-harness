@@ -323,6 +323,18 @@ class KerneltestTests(Modeltests):
         self.assertEqual(
             output.data.count('<td>3.14.1-200.fc20.x86_64</td>'), 1)
 
+    def test_index(self):
+        ''' Test the index method. '''
+        self.test_upload_results_autotest()
+        self.test_upload_results_anonymous()
+        self.test_upload_results_loggedin()
+        self.test_admin_new_release()
+
+        output = self.app.get('/')
+        self.assertTrue(
+            "<a href='/kernel/3.14.1-200.fc20.x86_64'>" in output.data)
+        self.assertTrue("<a href='/release/20'>" in output.data)
+
 
 if __name__ == '__main__':
     SUITE = unittest.TestLoader().loadTestsFromTestCase(KerneltestTests)
