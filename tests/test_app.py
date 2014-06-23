@@ -113,6 +113,104 @@ class KerneltestTests(Modeltests):
                 '<li class="error">The `kerneltest` username is reserved, '
                 'you are not allowed to use it</li>' in output.data)
 
+    def test_upload_results_anonymous(self):
+        ''' Test the app.upload_results function for an anonymous user. '''
+        folder = os.path.dirname(os.path.abspath(__file__))
+        filename = '2.log'
+
+        user = None
+        with user_set(app.APP, user):
+            output = self.app.get('/upload/')
+            self.assertEqual(output.status_code, 302)
+            self.assertTrue('<title>Redirecting...</title>' in output.data)
+
+        user = None
+        with user_set(app.APP, user):
+            output = self.app.get('/upload/anonymous')
+            self.assertEqual(output.status_code, 405)
+            self.assertTrue(
+                '<title>405 Method Not Allowed</title>' in output.data)
+
+            full_path = os.path.join(folder, filename)
+            stream = open(full_path)
+            data = {
+                'test_result': stream,
+                'username': 'pingou',
+            }
+            output = self.app.post('/upload/', data=data)
+            self.assertEqual(output.status_code, 302)
+            self.assertTrue('<title>Redirecting...</title>' in output.data)
+
+            # Invalid request
+            data = {
+                'username': 'pingou',
+            }
+            output = self.app.post('/upload/anonymous', data=data)
+            self.assertEqual(output.status_code, 400)
+            data = json.loads(output.data)
+            exp = {
+                "error": "Invalid request",
+                "messages": {
+                    "test_result": [
+                        "This field is required."
+                    ]
+                }
+            }
+            self.assertEqual(data, exp)
+
+            # Invalid username
+
+            stream = open(full_path)
+            data = {
+                'test_result': stream,
+                'username': 'kerneltest',
+            }
+            output = self.app.post('/upload/anonymous', data=data)
+            self.assertEqual(output.status_code, 401)
+            data = json.loads(output.data)
+            exp = {
+                'error': 'The `kerneltest` username is reserved, you are '
+                'not allowed to use it'
+            }
+            self.assertEqual(data, exp)
+
+            # Valid and successful upload
+            stream = open(full_path)
+            data = {
+                'test_result': stream,
+                'username': 'pingou',
+            }
+            output = self.app.post('/upload/anonymous', data=data)
+            self.assertEqual(output.status_code, 200)
+            data = json.loads(output.data)
+            self.assertEqual(data, {'message': 'Upload successful!'})
+
+            # Invalid file upload
+            full_path = os.path.join(folder, 'invalid.log')
+            stream = open(full_path)
+            data = {
+                'test_result': stream,
+                'username': 'ano',
+            }
+            output = self.app.post('/upload/anonymous', data=data)
+            self.assertEqual(output.status_code, 400)
+            data = json.loads(output.data)
+            exp = {"error": "Invalid input file"}
+            self.assertEqual(data, exp)
+
+            # Invalid mime type uploaded
+            full_path = os.path.join(folder, 'denied.png')
+            stream = open(full_path)
+            data = {
+                'test_result': stream,
+                'username': 'ano',
+            }
+            output = self.app.post('/upload/anonymous', data=data)
+            self.assertEqual(output.status_code, 400)
+            data = json.loads(output.data)
+            exp = {"error": "Invalid input file"}
+            self.assertEqual(data, exp)
+
 
 if __name__ == '__main__':
     SUITE = unittest.TestLoader().loadTestsFromTestCase(KerneltestTests)
