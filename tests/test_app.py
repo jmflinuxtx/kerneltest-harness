@@ -335,6 +335,18 @@ class KerneltestTests(Modeltests):
             "<a href='/kernel/3.14.1-200.fc20.x86_64'>" in output.data)
         self.assertTrue("<a href='/release/20'>" in output.data)
 
+    def test_release(self):
+        ''' Test the release method. '''
+        self.test_upload_results_autotest()
+        self.test_upload_results_anonymous()
+        self.test_upload_results_loggedin()
+        self.test_admin_new_release()
+
+        output = self.app.get('/release/20')
+        self.assertTrue(
+            "<a href='/kernel/3.14.1-200.fc20.x86_64'>" in output.data)
+        self.assertTrue('<h1>Kernels Tested for Fedora </h1>' in output.data)
+
 
 if __name__ == '__main__':
     SUITE = unittest.TestLoader().loadTestsFromTestCase(KerneltestTests)
