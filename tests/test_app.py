@@ -363,6 +363,20 @@ class KerneltestTests(Modeltests):
         self.assertTrue("<a href='/logs/4'>" in output.data)
         self.assertTrue("<a href='/logs/5'>" in output.data)
 
+    def test_is_safe_url(self):
+        """ Test the is_safe_url function. """
+        import flask
+        lcl_app = flask.Flask('kerneltest')
+
+        with lcl_app.test_request_context():
+            self.assertTrue(app.is_safe_url('http://localhost'))
+            self.assertTrue(app.is_safe_url('https://localhost'))
+            self.assertTrue(app.is_safe_url('http://localhost/test'))
+            self.assertFalse(
+                app.is_safe_url('http://fedoraproject.org/'))
+            self.assertFalse(
+                app.is_safe_url('https://fedoraproject.org/'))
+
 
 if __name__ == '__main__':
     SUITE = unittest.TestLoader().loadTestsFromTestCase(KerneltestTests)
