@@ -433,6 +433,48 @@ class KerneltestTests(Modeltests):
             self.assertTrue("<a href='/release/20'>" in output.data)
             self.assertTrue("<a href='/admin/20/edit'" in output.data)
 
+    def test_admin_edit_release(self):
+        """ Test the admin_new_release function. """
+        self.test_admin_new_release()
+
+        user = FakeFasUser()
+        user.groups.append('sysadmin-kernel')
+        with user_set(app.APP, user):
+            output = self.app.get('/admin/21/edit', follow_redirects=True)
+            self.assertEqual(output.status_code, 200)
+            self.assertTrue(
+                '<li class="message">No release 21 found</li>'
+                in output.data)
+
+            output = self.app.get('/admin/20/edit')
+            self.assertEqual(output.status_code, 200)
+            self.assertTrue(
+                '<h1> Release: 20 </h1>' in output.data)
+            self.assertTrue(
+                '<form action="/admin/20/edit" method="POST">'
+                in output.data)
+
+            csrf_token = output.data.split(
+                'name="csrf_token" type="hidden" value="')[1].split('">')[0]
+
+            data = {
+                'csrf_token': csrf_token,
+                'releasenum': 21,
+                'support': 'RAWHIDE',
+            }
+
+            output = self.app.post(
+                '/admin/20/edit', data=data, follow_redirects=True)
+            self.assertEqual(output.status_code, 200)
+            self.assertTrue(
+                '<li class="message">Release &#34;21&#34; updated</li>'
+                in output.data)
+            self.assertTrue("<a href='/release/21'>" in output.data)
+            self.assertTrue("Fedora Rawhide" in output.data)
+            self.assertTrue("<a href='/admin/21/edit'" in output.data)
+            self.assertFalse("<a href='/release/20'>" in output.data)
+            self.assertFalse("<a href='/admin/20/edit'" in output.data)
+
 
 if __name__ == '__main__':
     SUITE = unittest.TestLoader().loadTestsFromTestCase(KerneltestTests)
