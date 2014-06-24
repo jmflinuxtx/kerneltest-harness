@@ -497,6 +497,48 @@ class KerneltestTests(Modeltests):
             self.assertTrue(
                 '<h1>Fedora Kernel Test Results</h1>' in output.data)
 
+    def test_logout(self):
+        """ Test the logout function. """
+        output = self.app.get('/logout')
+        self.assertEqual(output.status_code, 302)
+
+        output = self.app.get('/logout', follow_redirects=True)
+        self.assertEqual(output.status_code, 200)
+        self.assertTrue(
+            '<title>Home - Kernel-test harness</title>' in output.data)
+
+        user = FakeFasUser()
+        with user_set(app.APP, user):
+            output = self.app.get('/logout', follow_redirects=True)
+            self.assertEqual(output.status_code, 200)
+            self.assertTrue(
+                '<li class="message">You are no longer logged-in</li>'
+                in output.data)
+            self.assertTrue(
+                '<title>Home - Kernel-test harness</title>' in output.data)
+
+        user = FakeFasUser()
+        with user_set(app.APP, user):
+            output = self.app.get(
+                '/logout?next=/logout', follow_redirects=True)
+            self.assertEqual(output.status_code, 200)
+            self.assertTrue(
+                '<li class="message">You are no longer logged-in</li>'
+                in output.data)
+            self.assertTrue(
+                '<title>Home - Kernel-test harness</title>' in output.data)
+
+        user = FakeFasUser()
+        with user_set(app.APP, user):
+            output = self.app.get(
+                '/logout?next=/stats', follow_redirects=True)
+            self.assertEqual(output.status_code, 200)
+            self.assertTrue(
+                '<li class="message">You are no longer logged-in</li>'
+                in output.data)
+            self.assertTrue(
+                '<title>Stats - Kernel-test harness</title>' in output.data)
+
 
 if __name__ == '__main__':
     SUITE = unittest.TestLoader().loadTestsFromTestCase(KerneltestTests)
