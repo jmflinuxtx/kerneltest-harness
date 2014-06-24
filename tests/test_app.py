@@ -564,6 +564,22 @@ class KerneltestTests(Modeltests):
         output = self.app.get('/logs/2')
         self.assertEqual(output.data, exp_2)
 
+    def test_is_admin(self):
+        """ Test the is_admin method. """
+        self.assertFalse(app.is_admin(None))
+
+        user = FakeFasUser()
+        user.cla_done = False
+        self.assertFalse(app.is_admin(user))
+
+        user = FakeFasUser()
+        user.groups = []
+        self.assertFalse(app.is_admin(user))
+
+        user = FakeFasUser()
+        user.groups.append('sysadmin-main')
+        self.assertTrue(app.is_admin(user))
+
 
 if __name__ == '__main__':
     SUITE = unittest.TestLoader().loadTestsFromTestCase(KerneltestTests)
