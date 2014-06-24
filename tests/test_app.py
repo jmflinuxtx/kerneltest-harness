@@ -377,6 +377,62 @@ class KerneltestTests(Modeltests):
             self.assertFalse(
                 app.is_safe_url('https://fedoraproject.org/'))
 
+    def test_admin_new_release(self):
+        """ Test the admin_new_release function. """
+        user = None
+        with user_set(app.APP, user):
+            output = self.app.get('/admin/new', follow_redirects=True)
+            self.assertEqual(output.status_code, 200)
+            self.assertTrue(
+                '<title>OpenID transaction in progress</title>'
+                in output.data)
+
+        user = FakeFasUser()
+        user.groups = []
+        user.cla_done = False
+        with user_set(app.APP, user):
+            output = self.app.get('/admin/new', follow_redirects=True)
+            self.assertEqual(output.status_code, 200)
+            self.assertTrue(
+                '<li class="error">You are not an admin</li>' in output.data)
+
+        user = FakeFasUser()
+        user.groups = []
+        with user_set(app.APP, user):
+            output = self.app.get('/admin/new', follow_redirects=True)
+            self.assertEqual(output.status_code, 200)
+            self.assertTrue(
+                '<li class="error">You are not an admin</li>' in output.data)
+
+        user = FakeFasUser()
+        user.groups.append('sysadmin-main')
+        with user_set(app.APP, user):
+            output = self.app.get('/admin/new')
+            self.assertEqual(output.status_code, 200)
+            self.assertTrue(
+                '<title> New release' in output.data)
+            self.assertTrue(
+                "<label for=\"releasenum\">Release number <span "
+                "class='error'>*</span></label>" in output.data)
+
+            csrf_token = output.data.split(
+                'name="csrf_token" type="hidden" value="')[1].split('">')[0]
+
+            data = {
+                'csrf_token': csrf_token,
+                'releasenum': 20,
+                'support': 'RELEASE',
+            }
+
+            output = self.app.post(
+                '/admin/new', data=data, follow_redirects=True)
+            self.assertEqual(output.status_code, 200)
+            self.assertTrue(
+                '<li class="message">Release &#34;20&#34; added</li>'
+                in output.data)
+            self.assertTrue("<a href='/release/20'>" in output.data)
+            self.assertTrue("<a href='/admin/20/edit'" in output.data)
+
 
 if __name__ == '__main__':
     SUITE = unittest.TestLoader().loadTestsFromTestCase(KerneltestTests)
