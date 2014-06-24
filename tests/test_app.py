@@ -475,6 +475,28 @@ class KerneltestTests(Modeltests):
             self.assertFalse("<a href='/release/20'>" in output.data)
             self.assertFalse("<a href='/admin/20/edit'" in output.data)
 
+    def test_login(self):
+        """ Test the login function. """
+        output = self.app.get('/login')
+        self.assertEqual(output.status_code, 200)
+        self.assertTrue(
+            '<title>OpenID transaction in progress</title>' in output.data)
+
+        app.APP.config['ADMIN_GROUP'] = 'sysadmin-main'
+        output = self.app.get(
+            '/login?next=/login', follow_redirects=True)
+        self.assertEqual(output.status_code, 200)
+        self.assertTrue(
+            '<title>OpenID transaction in progress</title>' in output.data)
+
+        user = FakeFasUser()
+        with user_set(app.APP, user):
+            output = self.app.get(
+            '/login?next=/login', follow_redirects=True)
+            self.assertEqual(output.status_code, 200)
+            self.assertTrue(
+                '<h1>Fedora Kernel Test Results</h1>' in output.data)
+
 
 if __name__ == '__main__':
     SUITE = unittest.TestLoader().loadTestsFromTestCase(KerneltestTests)
