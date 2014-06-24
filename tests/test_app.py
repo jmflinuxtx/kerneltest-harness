@@ -539,6 +539,31 @@ class KerneltestTests(Modeltests):
             self.assertTrue(
                 '<title>Stats - Kernel-test harness</title>' in output.data)
 
+    def test_logs(self):
+        """ Test the logs method. """
+        folder = os.path.dirname(os.path.abspath(__file__))
+        app.APP.config['LOG_DIR'] = os.path.join(folder, 'logs')
+
+        self.test_upload_results_autotest()
+
+        # Read the files uploaded
+        filename = '3.log'
+        full_path = os.path.join(folder, filename)
+        with open(full_path) as stream:
+            exp_1 = stream.read()
+
+        filename = '4.log'
+        full_path = os.path.join(folder, filename)
+        with open(full_path) as stream:
+            exp_2 = stream.read()
+
+        # Compare what's uploaded and what's stored
+        output = self.app.get('/logs/1')
+        self.assertEqual(output.data, exp_1)
+
+        output = self.app.get('/logs/2')
+        self.assertEqual(output.data, exp_2)
+
 
 if __name__ == '__main__':
     SUITE = unittest.TestLoader().loadTestsFromTestCase(KerneltestTests)
