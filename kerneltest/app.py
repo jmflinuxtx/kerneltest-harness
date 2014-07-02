@@ -117,7 +117,7 @@ def upload_results(test_result, username, authenticated=False):
         fver = relarch[-3].replace("fc", "", 1)
 
     username = username
-    if hasattr(flask.g, 'fas_user') and flask.g.fas_user:
+    if is_authenticated():
         username = flask.g.fas_user.username
 
     test = dbtools.KernelTest(
@@ -337,7 +337,7 @@ def upload():
 
         try:
             tests = upload_results(
-                test_result, username, authenticated=True)
+                test_result, username, authenticated=is_authenticated())
             SESSION.commit()
             flask.flash('Upload successful!')
         except InvalidInputException as err:
@@ -418,7 +418,7 @@ def upload_anonymous():
         test_result = form.test_result.data
         username = form.username.data
         authenticated = False
-        if hasattr(flask.g, 'fas_user') and flask.g.fas_user:
+        if is_authenticated():
             username = flask.g.fas_user.username
             authenticated = True
 
@@ -431,7 +431,7 @@ def upload_anonymous():
 
         try:
             tests = upload_results(
-                test_result, username, authenticated=authenticated)
+                test_result, username, authenticated=is_authenticated())
             SESSION.commit()
             output = {'message': 'Upload successful!'}
         except InvalidInputException as err:
