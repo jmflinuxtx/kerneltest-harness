@@ -2,7 +2,7 @@
 %distutils.sysconfig import get_python_lib; print (get_python_lib())")}
 
 Name:           kerneltest
-Version:        1.0.3
+Version:        1.0.4
 Release:        1%{?dist}
 Summary:        Fedora Kernel test database
 
