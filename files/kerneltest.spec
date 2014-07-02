@@ -83,6 +83,9 @@ install -m 644 createdb.py $RPM_BUILD_ROOT/%{_datadir}/kerneltest/kerneltest_cre
 
 
 %changelog
+* Wed Jul 02 2014 Justin M. Forbes <jforbes@fedoraproject.org> - 1.0.4-1
+- Update to 1.0.4
+
 * Wed Jun 18 2014 Pierre-Yves Chibon <pingou@pingoured.fr> - 1.0.3-1
 - Update to 1.0.3
 
