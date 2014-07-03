@@ -32,12 +32,13 @@ def launchdomain(domain):
     dom = conn.lookupByName(domain)
     if "Rawhide" in domain:
         dom.reboot()
-    while True:
-        domstate = dom.info()[0]
-        if domstate == 5:
-           break
-        time.sleep(30)
-    dom.create()
+    else:
+        while True:
+            domstate = dom.info()[0]
+            if domstate == 5:
+               break
+            time.sleep(30)
+        dom.create()
     print "Domain %s started" % (domain)
  
 if __name__ == '__main__':
