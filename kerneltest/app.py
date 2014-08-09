@@ -116,7 +116,6 @@ def upload_results(test_result, username, authenticated=False):
         testarch = "i686+PAE"
         fver = relarch[-3].replace("fc", "", 1)
 
-    username = username
     if is_authenticated():
         username = flask.g.fas_user.username
 
