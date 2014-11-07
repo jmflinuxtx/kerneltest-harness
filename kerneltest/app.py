@@ -57,6 +57,11 @@ STDERR_LOG = logging.StreamHandler(sys.stderr)
 STDERR_LOG.setLevel(logging.INFO)
 APP.logger.addHandler(STDERR_LOG)
 
+
+import kerneltest.proxy
+
+APP.wsgi_app = kerneltest.proxy.ReverseProxied(APP.wsgi_app)
+
 SESSION = dbtools.create_session(APP.config['DB_URL'])
 
 
