@@ -7,7 +7,6 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.orm import scoped_session
 
-import kerneltest.app
 
 BASE = declarative_base()
 
@@ -23,6 +22,7 @@ def fedmsg_publish(*args, **kwargs):  # pragma: no cover
         import fedmsg
         fedmsg.publish(*args, **kwargs)
     except Exception, err:
+        import kerneltest.app
         kerneltest.app.APP.logger.exception(err)
 
 

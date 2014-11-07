@@ -15,7 +15,7 @@ from flask.ext import wtf as flask_wtf
 from flask.ext.wtf import file as wtf_file
 from sqlalchemy.exc import SQLAlchemyError
 
-import dbtools
+import kerneltest.dbtools as dbtools
 
 __version__ = '1.0.5'
 
