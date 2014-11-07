@@ -2,7 +2,7 @@
 %distutils.sysconfig import get_python_lib; print (get_python_lib())")}
 
 Name:           kerneltest
-Version:        1.0.4
+Version:        1.0.5
 Release:        1%{?dist}
 Summary:        Fedora Kernel test database
 
@@ -83,6 +83,13 @@ install -m 644 createdb.py $RPM_BUILD_ROOT/%{_datadir}/kerneltest/kerneltest_cre
 
 
 %changelog
+* Fri Nov 07 2014 Pierre-Yves Chibon <pingou@fedoraproject.org> - 1.0.5-1
+- Update to 1.0.5
+- Log fedmsg tracebacks instead of discarding them
+- Don't wait for Rawhide to shut down, it never does
+- Remove an unnecessary variable assignment
+- Turn the application into a ReverseProxied application
+
 * Wed Jul 02 2014 Justin M. Forbes <jforbes@fedoraproject.org> - 1.0.4-1
 - Update to 1.0.4
 
