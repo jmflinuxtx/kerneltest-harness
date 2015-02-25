@@ -23,5 +23,5 @@ ADMIN_GROUP = ['sysadmin-kernel', 'sysadmin-main']
 # List of MIME types allowed for upload in the application
 ALLOWED_MIMETYPES = ['text/plain']
 
-# Restrict the size of content uploaded, this is 10Kb
-MAX_CONTENT_LENGTH = 1024 * 10
+# Restrict the size of content uploaded, this is 25Kb
+MAX_CONTENT_LENGTH = 1024 * 25
