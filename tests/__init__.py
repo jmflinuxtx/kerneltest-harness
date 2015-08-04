@@ -27,7 +27,7 @@ import kerneltest.dbtools as dbtools
 #DB_PATH = 'sqlite:///:memory:'
 ## A file database is required to check the integrity, don't ask
 DB_PATH = 'sqlite:////tmp/test.sqlite'
-FAITOUT_URL = 'http://209.132.184.152/faitout/'
+FAITOUT_URL = 'http://faitout.fedorainfracloud.org/'
 
 if os.environ.get('BUILD_ID'):
     try:
