@@ -40,5 +40,5 @@ SESSION.add(release)
 
 try:
     SESSION.commit()
-except SQLAlchemyError, err:
+except SQLAlchemyError as err:
     print(err)

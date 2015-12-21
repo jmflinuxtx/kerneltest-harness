@@ -21,7 +21,7 @@ def fedmsg_publish(*args, **kwargs):  # pragma: no cover
     try:
         import fedmsg
         fedmsg.publish(*args, **kwargs)
-    except Exception, err:
+    except Exception as err:
         import kerneltest.app
         kerneltest.app.APP.logger.exception(err)
 
