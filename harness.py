@@ -2,6 +2,7 @@
 #
 # Licensed under the terms of the GNU GPL License version 2
 
+from __future__ import print_function
 import os
 import string
 import time
@@ -39,7 +40,7 @@ def launchdomain(domain):
                break
             time.sleep(30)
         dom.create()
-    print "Domain %s started" % (domain)
+    print("Domain %s started" % (domain))
  
 if __name__ == '__main__':
     pidfile = open('/var/run/harness.pid', 'w')
@@ -66,7 +67,7 @@ if __name__ == '__main__':
                     writelatest(domain, package[1])
                     dom32 = domain + '32'
                     dom64 = domain + '64'
-                    print "starting domain %s" % (dom32)
+                    print("starting domain %s" % (dom32))
                     thread.start_new(launchdomain, (dom32,))
-                    print "starting domain %s" % (dom64)
+                    print("starting domain %s" % (dom64))
                     thread.start_new(launchdomain, (dom64,))
