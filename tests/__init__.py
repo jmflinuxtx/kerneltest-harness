@@ -1,5 +1,7 @@
 # Licensed under the terms of the GNU GPL License version 2
 
+from __future__ import print_function
+
 '''
 kerneltest tests.
 '''
@@ -35,7 +37,7 @@ if os.environ.get('BUILD_ID'):
         req = requests.get('%s/new' % FAITOUT_URL)
         if req.status_code == 200:
             DB_PATH = req.text
-            print 'Using faitout at: %s' % DB_PATH
+            print('Using faitout at: %s' % DB_PATH)
     except:
         pass
 
@@ -102,7 +104,7 @@ class Modeltests(unittest.TestCase):
                 db_name = DB_PATH.rsplit('/', 1)[1]
                 req = requests.get(
                     '%s/clean/%s' % (FAITOUT_URL, db_name))
-                print req.text
+                print(req.text)
 
 
 if __name__ == '__main__':
