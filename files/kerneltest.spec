@@ -2,7 +2,7 @@
 %distutils.sysconfig import get_python_lib; print (get_python_lib())")}
 
 Name:           kerneltest
-Version:        1.0.5
+Version:        1.1.1
 Release:        1%{?dist}
 Summary:        Fedora Kernel test database
 
@@ -83,6 +83,13 @@ install -m 644 createdb.py $RPM_BUILD_ROOT/%{_datadir}/kerneltest/kerneltest_cre
 
 
 %changelog
+* Sat Mar 05 2016 Pierre-Yves Chibon <pingou@pingoured.fr> - 1.1.1-1
+- Update to 1.1.1
+- Fix imports to avoid circular imports
+- Increase the size of allowed uploads to max 25Kb by default
+- Add fedmenu integration
+- Start python3 support
+
 * Fri Nov 07 2014 Pierre-Yves Chibon <pingou@fedoraproject.org> - 1.0.5-1
 - Update to 1.0.5
 - Log fedmsg tracebacks instead of discarding them
