@@ -1,0 +1,22 @@
+---
+- name: Install dev packages
+  dnf:
+      name: "{{ item }}"
+      state: present
+  with_items:
+      - python-flask
+      - python-flask-wtf
+      - python-fedora-flask
+      - python-wtforms
+      - python-sqlalchemy
+      - python-openid
+      - python-openid-teams
+      - python-openid-cla
+
+- name: Create the sqlite database
+  command: python createdb.py
+  become: yes
+  become_user: vagrant
+  args:
+    chdir: /vagrant
+    creates: /var/tmp/kernel-test_dev.sqlite

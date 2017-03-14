@@ -24,3 +24,31 @@ To run a development instance:
  $ python app.py
 
 The application should be accessible at http//127.0.0.1:5000.
+
+Hacking with Vagrant
+--------------------
+
+Quickly start hacking on kernel-tests using the vagrant setup that is included in the
+repo is super simple.
+
+First, install Ansible, Vagrant, the vagrant-sshfs plugin, and the vagrant-libvirt
+plugin from the official Fedora repos::
+
+    $ sudo dnf install ansible vagrant vagrant-libvirt vagrant-sshfs
+
+
+Now, from within main directory (the one with the Vagrantfile in it) of your git
+checkout of kerneltests, copy the ``Vagrantfile.example`` file to ``Vagrantfile``
+and run the ``vagrant up`` command to provision your dev
+environment::
+
+    $ cp Vagrantfile.example Vagrantfile
+    $ vagrant up
+
+When this command is completed (it may take a while), Run the following command
+on your host to start the server::
+
+    $ vagrant ssh -c"cd /vagrant; ./runserver.py --host='0.0.0.0';"
+
+Once that is running, simply go to http://localhost:5000/ in your browser on
+your host to see your running kerneltests test instance.

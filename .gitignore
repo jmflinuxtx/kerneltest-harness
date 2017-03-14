@@ -2,7 +2,7 @@
 *.pyc
 *.pyo
 *.swp
-*.mo 
+*.mo
 *.cfg
 dist
 *.egg-info
@@ -15,3 +15,5 @@ pylint.out
 nosetests.xml
 tests/logs/
 logs/
+.vagrant/
+Vagrantfile
