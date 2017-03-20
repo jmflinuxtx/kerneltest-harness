@@ -21,19 +21,25 @@ SESSION=dbtools.create_session(
     debug=True)
 
 release = dbtools.Release(
-    releasenum = "19",
+    releasenum = "24",
     support = "RELEASE",
 )
 SESSION.add(release)
 
 release = dbtools.Release(
-    releasenum = "20",
+    releasenum = "25",
     support = "RELEASE",
 )
 SESSION.add(release)
 
 release = dbtools.Release(
-    releasenum = "21",
+    releasenum = "26",
+    support = "RELEASE",
+)
+SESSION.add(release)
+
+release = dbtools.Release(
+    releasenum = "27",
     support = "RAWHIDE",
 )
 SESSION.add(release)
