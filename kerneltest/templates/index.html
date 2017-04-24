@@ -62,6 +62,8 @@
         <td>
             {% if result.testresult == 'PASS' %}
             <img src="{{ url_for('static', filename='Approved.png') }}" />
+            {% elif result.testresult == 'WARN' %}
+            <img src="{{ url_for('static', filename='Warn.png') }}" />
             {% else %}
             <img src="{{ url_for('static', filename='Denied.png') }}" />
             {% endif %}

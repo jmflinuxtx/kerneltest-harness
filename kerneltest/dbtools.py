@@ -37,7 +37,7 @@ class KernelTest(BASE):
     fver = sa.Column(sa.Integer, nullable=True, index=True)
     testarch = sa.Column(sa.String(8), nullable=False)
     testrel = sa.Column(sa.String(80), nullable=False)
-    testresult = sa.Column(sa.Enum('PASS', 'FAIL', name='testresult'))
+    testresult = sa.Column(sa.Enum('PASS', 'FAIL', 'WARN', name='testresult'))
     failedtests = sa.Column(sa.Text(), nullable=True)
     authenticated = sa.Column(sa.Boolean, nullable=False, default=False)
 
