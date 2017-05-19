@@ -63,6 +63,7 @@ install -m 644 files/kerneltest.conf $RPM_BUILD_ROOT/%{_sysconfdir}/httpd/conf.d
 mkdir -p $RPM_BUILD_ROOT/%{_sysconfdir}/kerneltest
 install -m 644 files/kerneltest.cfg.sample $RPM_BUILD_ROOT/%{_sysconfdir}/kerneltest/kerneltest.cfg
 
+
 mkdir -p $RPM_BUILD_ROOT/%{_datadir}/kerneltest
 
 # Install WSGI file
@@ -71,11 +72,18 @@ install -m 644 files/kerneltest.wsgi $RPM_BUILD_ROOT/%{_datadir}/kerneltest/kern
 # Install the createdb script
 install -m 644 createdb.py $RPM_BUILD_ROOT/%{_datadir}/kerneltest/kerneltest_createdb.py
 
+# Install the alembic configuration file
+install -m 644 files/alembic.ini $RPM_BUILD_ROOT/%{_sysconfdir}/kerneltest/alembic.ini
+
+# Install the alembic revisions
+cp -r alembic $RPM_BUILD_ROOT/%{_datadir}/kerneltest
+
 
 %files
 %doc README.md LICENSE
 %config(noreplace) %{_sysconfdir}/httpd/conf.d/kerneltest.conf
 %config(noreplace) %{_sysconfdir}/kerneltest/kerneltest.cfg
+%config(noreplace) %{_sysconfdir}/kerneltest/alembic.ini
 %dir %{_sysconfdir}/kerneltest/
 %{_datadir}/kerneltest/
 %{python_sitelib}/kerneltest/

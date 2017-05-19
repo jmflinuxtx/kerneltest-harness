@@ -1,6 +1,5 @@
 include LICENSE README.md
 include harness.py createdb.py
-include alembic.ini
 recursive-include kerneltest *
 recursive-include guests *
 recursive-include files *
