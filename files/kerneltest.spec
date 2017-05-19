@@ -2,7 +2,7 @@
 %distutils.sysconfig import get_python_lib; print (get_python_lib())")}
 
 Name:           kerneltest
-Version:        1.1.1
+Version:        1.2
 Release:        1%{?dist}
 Summary:        Fedora Kernel test database
 
@@ -83,6 +83,12 @@ install -m 644 createdb.py $RPM_BUILD_ROOT/%{_datadir}/kerneltest/kerneltest_cre
 
 
 %changelog
+* Fri May 19 2017 Pierre-Yves Chibon <pingou@pingoured.fr> - 1.2-1
+- Update to 1.2
+- Create a Vagrant setup to make developing the app easier (Ryan Lerch)
+- Add a warn result separate from fail for 3rd party modules (Justin M. Forbes &
+  I)
+
 * Sat Mar 05 2016 Pierre-Yves Chibon <pingou@pingoured.fr> - 1.1.1-1
 - Update to 1.1.1
 - Fix imports to avoid circular imports
