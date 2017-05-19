@@ -2,7 +2,7 @@
 %distutils.sysconfig import get_python_lib; print (get_python_lib())")}
 
 Name:           kerneltest
-Version:        1.2
+Version:        1.2.1
 Release:        1%{?dist}
 Summary:        Fedora Kernel test database
 
@@ -91,6 +91,10 @@ cp -r alembic $RPM_BUILD_ROOT/%{_datadir}/kerneltest
 
 
 %changelog
+* Fri May 19 2017 Pierre-Yves Chibon <pingou@pingoured.fr> - 1.2.1-1
+- Update to 1.2.1
+- Include and install the alembic files
+
 * Fri May 19 2017 Pierre-Yves Chibon <pingou@pingoured.fr> - 1.2-1
 - Update to 1.2
 - Create a Vagrant setup to make developing the app easier (Ryan Lerch)
