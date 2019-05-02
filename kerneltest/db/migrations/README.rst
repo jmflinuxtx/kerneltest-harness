@@ -6,7 +6,7 @@ use `alembic`_ for that.
 Create a new migration script
 =============================
 
-Say you've modified a model in ``kerneltest/dbtools.py``. You now need to
+Say you've modified a model in ``kerneltest/db/models.py``. You now need to
 create a migration script, so that the current database can be "upgraded" to
 your new model.
 
@@ -15,7 +15,7 @@ This is what you'd do::
     $ alembic revision --autogenerate -m "Add the foo table"
 
 And that's it, alembic will compare your model with the current database, and
-generate a new script in ``alembic/versions/``.
+generate a new script in ``kerneltest/db/migrations/versions/``.
 
 Open it up, and make sure it's correct.
 

@@ -1,0 +1,10 @@
+blinker
+fedora-messaging
+Flask
+flask-wtf
+Flask-OIDC
+flask-restful
+six
+SQLAlchemy
+toml
+wtforms

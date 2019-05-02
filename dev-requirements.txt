@@ -1,0 +1,7 @@
+alembic
+bandit
+black
+coverage
+flake8
+liccheck
+pytest

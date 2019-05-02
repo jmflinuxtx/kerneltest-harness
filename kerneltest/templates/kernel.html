@@ -9,24 +9,30 @@
     <th>Result</th>
     <th>log</th>
 </tr>
-{% for test in tests %}
+{% for test in page.items %}
     <tr>
-        <td>{{ test.kver }}</td>
+        <td>{{ test.kernel_version }}</td>
         <td>
-            {% if test.testresult == 'PASS' %}
+            {% if test.result == 'PASS' %}
             <img src="{{ url_for('static', filename='Approved.png') }}" />
-            {% elif test.testresult == 'WARN' %}
+            {% elif test.result == 'WARN' %}
             <img src="{{ url_for('static', filename='Warn.png') }}" />
             {% else %}
             <img src="{{ url_for('static', filename='Denied.png') }}" />
             {% endif %}
-            {{ test.testresult }}
+            {{ test.result }}
         </td>
-        <td><a href='{{ url_for("logs", logid=test.testid) }}'>
-                logs </a>
+        <td><a href='{{ url_for("ui.results", test_run_id=test.id) }}'>
+                test results </a>
     </tr>
 {% endfor %}
 </table>
-</div>
+
+{% if page.total_items > page.page * page.items_per_page %}
+    <a href="{{ url_for('ui.kernel', kernel=kernel, page=page.page+1) }}">Next page</a>
+{% endif %}
+{% if page.page > 1 %}
+    <a href="{{ url_for('ui.kernel', kernel=kernel, page=page.page-1) }}">Previous page</a>
+{% endif %}
 
 {% endblock %}

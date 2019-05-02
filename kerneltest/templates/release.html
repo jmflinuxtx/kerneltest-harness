@@ -6,21 +6,28 @@
 {% if release == rawhide %}
     <h1>Kernels Tested for Fedora Rawhide</h1>
 {% else %}
-    <h1>Kernels Tested for Fedora {{ release.releasenum }}</h1>
+    <h1>Kernels Tested for Fedora {{ release.version }}</h1>
 {% endif %}
 
 <table border='1' style='width:400px'>
 <tr>
     <th>Kernel</th>
 </tr>
-{% for kernel in kernels %}
+{% for test in page.items %}
 <tr>
     <td>
-        <a href='{{ url_for("kernel", kernel=kernel[0]) }}'>
-            {{ kernel[0] }}
+        <a href='{{ url_for("ui.kernel", kernel=test.kernel_version) }}'>
+            {{ test.kernel_version }}
         </a>
 </tr>
 {% endfor %}
 </table>
+
+{% if page.total_items > page.page * page.items_per_page %}
+    <a href="{{ url_for('ui.release', release=release.version, page=page.page+1) }}">Next page</a>
+{% endif %}
+{% if page.page > 1 %}
+    <a href="{{ url_for('ui.release', release=release.version, page=page.page-1) }}">Previous page</a>
+{% endif %}
 
 {% endblock %}

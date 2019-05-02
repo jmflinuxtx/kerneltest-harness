@@ -26,21 +26,21 @@
         <div id="mainNav">
           <h4 class="hide">Main Site Links:</h4>
           <ul>
-            <li id="homeTab"><a href="{{url_for('index')}}">Home</a></li>
-            <li id="locationsTab"><a href="{{url_for('stats')}}">Stats</a></li>
-            {% if g.fas_user %}
-            <li id="mymeetingTab"><a href="{{url_for('upload')}}">Upload</a></li>
+            <li id="homeTab"><a href="{{url_for('ui.index')}}">Home</a></li>
+            <li id="locationsTab"><a href="{{url_for('ui.stats')}}">Stats</a></li>
+            {% if g.user %}
+            <li id="mymeetingTab"><a href="{{url_for('ui.upload')}}">Upload</a></li>
             {% endif %}
           </ul>
         </div><!-- end mainNav -->
 
         <span id="loginInfo">
-          {% if g.fas_user %}
+          {% if g.user %}
             <span class="text">logged in as </span>
-            {{ g.fas_user.username }} |
-            <a href="{{ url_for('logout') }}?next={{request.url}}">log out</a>
+            {{ g.user.username }} |
+            <a href="{{ url_for('ui.logout') }}?next={{request.url}}">log out</a>
           {% else %}
-            <a href="{{ url_for('login') }}?next={{request.url}}">login</a>
+            <a href="{{ url_for('ui.login') }}?next={{request.url}}">login</a>
           {% endif %}
         </span>
 

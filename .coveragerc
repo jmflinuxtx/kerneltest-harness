@@ -1,0 +1,17 @@
+[run]
+branch = True
+source =
+    kerneltest
+
+[paths]
+source =
+    kerneltest
+   .tox/*/site-packages/kerneltest
+
+[report]
+exclude_lines =
+    pragma: no cover
+    if __name__ == .__main__.:
+omit =
+    kerneltest/tests/*
+    kerneltest/db/migrations/env.py

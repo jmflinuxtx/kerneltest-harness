@@ -1,0 +1,34 @@
+{% extends "master.html" %}
+
+{% block title %}Test Run {{ test_run.result }}{% endblock %}
+
+{% block content %}
+
+Test run on {{ test_run.arch }} for kernel {{ test_run.kernel_version }}
+(Fedora {{ test_run.release_version }}) at {{ test_run.created }}:
+
+<h2>Tests</h2>
+<table border='1' style='width:300px'>
+    <tr>
+        <th>Name</th>
+        <th>Result</th>
+        <th>Details</th>
+    </tr>
+    {% for test in test_run.tests %}
+    <tr>
+        <td>{{ test.name }}</td>
+        {% if test.passed and not test.waived %}
+        <td>✅ Passed</td>
+        {% elif test.passed and test.waived %}
+        <td>🚧✅ Passed (waived)</td>
+        {% elif not test.passed and test.waived %}
+        <td>🚧❌ Failed (waived)</td>
+        {% else %}
+        <td>❌ Failed</td>
+        {% endif %}
+        <td>{{ test.details }}</td>
+    </tr>
+    {% endfor %}
+</table>
+
+{% endblock %}
