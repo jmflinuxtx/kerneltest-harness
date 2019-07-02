@@ -111,7 +111,7 @@ class Results(Resource):
         }
         return result, 200
 
-    @oidc.accept_token(require_token=True, scopes_required=_SCOPES)
+    @oidc.accept_token(require_token=False, scopes_required=_SCOPES)
     def post(self):
         parser = reqparse.RequestParser(trim=True, bundle_errors=True)
         parser.add_argument(

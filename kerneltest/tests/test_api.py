@@ -332,10 +332,31 @@ class ResultsGetTests(BaseTestCase):
 
 
 class ResultsPostTests(BaseTestCase):
-    def test_auth_required(self):
-        """Assert unathenticated requests return 401."""
-        result = self.flask_client.post("/api/v1/results/", json={})
-        assert result.status_code == 401
+    def test_create_unauthenticated(self):
+        """Assert unathenticated requests create anonymous results."""
+        test_run = {
+            "kernel_version": "5.1.2",
+            "build_release": "300.fc30",
+            "arch": "aarch64",
+            "fedora_version": 29,
+            "tests": [
+                {
+                    "name": "Boot test",
+                    "passed": True,
+                    "waived": False,
+                    "details": "Something something booted successfully",
+                }
+            ],
+        }
+        db.Session.add(db.Release(version=29))
+        db.Session.commit()
+
+        with mock_sends(fm_api.Message):
+            result = self.flask_client.post("/api/v1/results/", json=test_run)
+        assert result.status_code == 201
+        assert db.TestRun.query.count() == 1
+        assert db.TestRun.query.one().user is None
+        assert db.Test.query.count() == 1
 
     def test_create_no_release(self):
         """Assert test results can be created."""
