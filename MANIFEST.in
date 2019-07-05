@@ -1,7 +1,7 @@
 include LICENSE README.md
 include harness.py createdb.py
+include requirements.txt
+include dev-requirements.txt
 recursive-include kerneltest *
 recursive-include guests *
 recursive-include files *
-recursive-include alembic *.py *.mako *.rst
-

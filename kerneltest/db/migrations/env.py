@@ -1,34 +1,22 @@
-from __future__ import with_statement
 from logging.config import fileConfig
 
-import os
-
 from alembic import context
-from sqlalchemy import engine_from_config, pool, event
-
-
-if 'KERNELTEST_CONFIG' not in os.environ \
-        and os.path.exists('/etc/kerneltest/kerneltest.cfg'):
-    print 'Using configuration file `/etc/kerneltest/kerneltest.cfg`'
-    os.environ['kerneltest/kerneltest.cfg'] = '/etc/kerneltest/kerneltest.cfg'
-
-
-from kerneltest.app import APP
-from kerneltest.dbtools import BASE
+from sqlalchemy import pool, event, create_engine
+from kerneltest.db import Base
+from kerneltest.default_config import config as app_config
 
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
 config = context.config
 
-# Use the options from the Bodhi config
-config.set_main_option("sqlalchemy.url", APP.config['DB_URL'])
+config.set_main_option("sqlalchemy.url", app_config["DB_URL"])
 
 # Interpret the config file for Python logging.
 # This line sets up loggers basically.
 fileConfig(config.config_file_name)
 
-target_metadata = BASE.metadata
+target_metadata = Base.metadata
 
 # other values from the config, defined by the needs of env.py,
 # can be acquired:
@@ -48,12 +36,11 @@ def run_migrations_offline():
     script output.
 
     """
-    url = config.get_main_option("sqlalchemy.url")
-    context.configure(url=url)
+    context.configure(url=app_config["DB_URL"])
 
     with context.begin_transaction():
-        if config.get_main_option('bdr').strip().lower() == 'true':
-            context.execute('SET LOCAL bdr.permit_ddl_locking = true')
+        if config.get_main_option("bdr").strip().lower() == "true":
+            context.execute("SET LOCAL bdr.permit_ddl_locking = true")
         context.run_migrations()
 
 
@@ -64,27 +51,25 @@ def run_migrations_online():
     and associate a connection with the context.
 
     """
-    engine = engine_from_config(
-        config.get_section(config.config_ini_section),
-        prefix='sqlalchemy.',
-        poolclass=pool.NullPool)
+    engine = create_engine(app_config["DB_URL"], poolclass=pool.NullPool)
 
-    if config.get_main_option('bdr').strip().lower() == 'true':
+    if config.get_main_option("bdr").strip().lower() == "true":
+
         def enable_bdr(connection, connection_record):
             with connection.cursor() as cursor:
-                cursor.execute('SET LOCAL bdr.permit_ddl_locking = true')
-        event.listen(engine, 'connect', enable_bdr)
+                cursor.execute("SET LOCAL bdr.permit_ddl_locking = true")
+
+        event.listen(engine, "connect", enable_bdr)
 
     connection = engine.connect()
-    context.configure(
-        connection=connection,
-        target_metadata=target_metadata)
+    context.configure(connection=connection, target_metadata=target_metadata)
 
     try:
         with context.begin_transaction():
             context.run_migrations()
     finally:
         connection.close()
+
 
 if context.is_offline_mode():
     run_migrations_offline()

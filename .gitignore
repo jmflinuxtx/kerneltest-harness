@@ -10,10 +10,12 @@ build
 .project
 .pydevproject
 .coverage
-_build/
 pylint.out
 nosetests.xml
-tests/logs/
+Vagrantfile
+client_secrets.json
+_build/
 logs/
 .vagrant/
-Vagrantfile
+htmlcov/
+tests/logs/

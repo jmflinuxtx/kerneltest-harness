@@ -1,50 +1,21 @@
-#!/usr/bin/python
-
-from __future__ import print_function
-
-## These two lines are needed to run on EL6
-__requires__ = ['SQLAlchemy >= 0.7', 'jinja2 >= 2.4']
-import pkg_resources
+#!/usr/bin/env python
 
 from sqlalchemy.exc import SQLAlchemyError
-import kerneltest.app as app
-import kerneltest.dbtools as dbtools
+from alembic.config import Config
+from alembic import command
 
-dbtools.create_session(
-    app.APP.config['DB_URL'],
-    debug=True,
-    create_table=True)
+from kerneltest import db, default_config
 
-## Add current supported releases
-SESSION=dbtools.create_session(
-    app.APP.config['DB_URL'],
-    debug=True)
-
-release = dbtools.Release(
-    releasenum = "24",
-    support = "RELEASE",
-)
-SESSION.add(release)
-
-release = dbtools.Release(
-    releasenum = "25",
-    support = "RELEASE",
-)
-SESSION.add(release)
-
-release = dbtools.Release(
-    releasenum = "26",
-    support = "RELEASE",
-)
-SESSION.add(release)
-
-release = dbtools.Release(
-    releasenum = "27",
-    support = "RAWHIDE",
-)
-SESSION.add(release)
 
 try:
-    SESSION.commit()
+    engine = db.initialize(default_config.config.load_config())
+    db.Base.metadata.create_all(engine)
+    alembic_cfg = Config("alembic.ini")
+    command.stamp(alembic_cfg, "head")
+
+    session = db.Session()
+    session.add(db.Release(releasenum="30", support="RELEASE"))
+    session.commit()
+    db.Session.remove()
 except SQLAlchemyError as err:
     print(err)

@@ -16,11 +16,11 @@
   </tr>
   <tr>
     <th>Number of kernels tested</th>
-    <td>{{ stats['kernels'] | length }}</td>
+    <td>{{ stats['kernels'] }}</td>
   </tr>
   <tr>
     <th>Number of arches tested</th>
-    <td>{{ stats['arches'] | length }}</td>
+    <td>{{ stats['arches'] }}</td>
   </tr>
 </table>
 
@@ -36,10 +36,10 @@
   {% for release in stats['rel_stats'] | sort(reverse=True) %}
   <tr>
     <td>{{ release }}</td>
-    <td>{{ stats['rel_stats'][release]['kernels'] | length }}</td>
-    <td>{{ stats['rel_stats'][release]['tests'] | length }}</td>
-    <td>{{ stats['rel_stats'][release]['arches'] | length }}</td>
-    <td>{{ stats['rel_stats'][release]['testers'] | length }}</td>
+    <td>{{ stats['rel_stats'][release]['kernels'] }}</td>
+    <td>{{ stats['rel_stats'][release]['tests'] }}</td>
+    <td>{{ stats['rel_stats'][release]['arches'] }}</td>
+    <td>{{ stats['rel_stats'][release]['testers'] }}</td>
   </tr>
   {% endfor %}
 </table>
@@ -56,10 +56,10 @@
   {% for kernel in stats['ker_stats'] | sort(reverse=True) %}
   <tr>
     <td>{{ kernel }}</td>
-    <td>{{ stats['ker_stats'][kernel]['releases'] | length }}</td>
-    <td>{{ stats['ker_stats'][kernel]['tests'] | length }}</td>
-    <td>{{ stats['ker_stats'][kernel]['arches'] | length }}</td>
-    <td>{{ stats['ker_stats'][kernel]['testers'] | length }}</td>
+    <td>{{ stats['ker_stats'][kernel]['releases'] }}</td>
+    <td>{{ stats['ker_stats'][kernel]['tests'] }}</td>
+    <td>{{ stats['ker_stats'][kernel]['arches'] }}</td>
+    <td>{{ stats['ker_stats'][kernel]['testers'] }}</td>
   </tr>
   {% endfor %}
 </table>

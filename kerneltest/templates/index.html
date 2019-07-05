@@ -8,7 +8,7 @@
 <ul>
   {% if is_admin %}
   <li>
-    <a href='{{ url_for("admin_new_release") }}'>
+    <a href='{{ url_for("ui.admin_new_release") }}'>
         New release
     </a>
   </li>
@@ -18,16 +18,16 @@
   {% for release in releases %}
   <li>
     {% if release == rawhide %}
-        <a href='{{ url_for("release", release=release.releasenum) }}'>
+        <a href='{{ url_for("ui.release", release=release.version, page=1) }}'>
             Fedora Rawhide
         </a>
     {% else %}
-      <a href='{{ url_for("release", release=release.releasenum) }}'>
-          Fedora {{ release.releasenum }}
+      <a href='{{ url_for("ui.release", release=release.version, page=1) }}'>
+          Fedora {{ release.version }}
       </a>
     {% endif %}
     {% if is_admin %}
-    (<a href='{{ url_for("admin_edit_release", relnum=release.releasenum) }}'
+    (<a href='{{ url_for("ui.admin_edit_release", relnum=release.version) }}'
         >edit</a>)
     {% endif %}
   </li>
@@ -55,23 +55,23 @@
 {% for result in test_matrix %}
     <tr>
         <td>
-            <a href='{{ url_for("kernel", kernel=result.kver) }}'>
-                {{ result.kver }}
+            <a href='{{ url_for("ui.kernel", kernel=result.kernel_version) }}'>
+                {{ "{}-{}.{}".format(result.kernel_version, result.build_release, result.arch) }}
             </a>
         </td>
         <td>
-            {% if result.testresult == 'PASS' %}
+            {% if result.result == 'PASS' %}
             <img src="{{ url_for('static', filename='Approved.png') }}" />
-            {% elif result.testresult == 'WARN' %}
+            {% elif result.result == 'WARN' %}
             <img src="{{ url_for('static', filename='Warn.png') }}" />
             {% else %}
             <img src="{{ url_for('static', filename='Denied.png') }}" />
             {% endif %}
-            {{ result.testresult }}
+            {{ result.result }}
         </td>
         <td>
-            <a href='{{ url_for("logs", logid=result.testid) }}'>
-                logs
+            <a href='{{ url_for("ui.results", test_run_id=result.id) }}'>
+                test results
             </a>
         </td>
     </tr>
