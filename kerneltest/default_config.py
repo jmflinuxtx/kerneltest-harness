@@ -30,7 +30,7 @@ DEFAULTS = dict(
         "openid",
         "profile",
         "https://id.fedoraproject.org/scope/groups",
-        "https://id.fedoraproject.org/scope/cla",
+        "https://id.fedoraproject.org/scope/agreements",
         "https://github.com/jmflinuxtx/kerneltest-harness/oidc/upload_test_run",
     ],
     LOG_CONFIG={

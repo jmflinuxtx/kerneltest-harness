@@ -83,7 +83,7 @@ def pre_request_user():
     if ui_view.oidc.user_loggedin:
         flask.g.user = User(
             ui_view.oidc.user_getfield("groups"),
-            ui_view.oidc.user_getfield("cla"),
+            "FPCA" in ui_view.oidc.user_getfield("agreements"),
             ui_view.oidc.user_getfield("nickname"),
         )
     else:
