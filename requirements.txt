@@ -8,3 +8,5 @@ six
 SQLAlchemy
 toml
 wtforms
+gunicorn
+psycopg2-binary
